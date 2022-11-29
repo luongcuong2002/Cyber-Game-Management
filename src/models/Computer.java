@@ -8,7 +8,9 @@ package models;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
+import javax.swing.JTable;
 import javax.swing.Timer;
+import views.tabs.ComputerClient;
 
 /**
  *
@@ -19,15 +21,14 @@ public class Computer {
     private String status;
     private User userUsing;
     private Date timeStart;
-    private int usedByMinute;
-    private int remainingByMinute;
+    private int usedBySecond;
+    private int remainingBySecond;
     private int price = 0;
     private Date currentDate;
     private ComputerGroup computerGroup;
     private Timer timer;
     
-    private int count = 0;
-    private int totalMinutes = 0;
+    private int totalSeconds = 0;
 
     public Computer(String computerName, ComputerGroup computerGroup) {
         this.computerName = computerName;
@@ -35,7 +36,7 @@ public class Computer {
         this.computerGroup = computerGroup;
     }
     
-    public void turnOnComputer(User user){
+    public void turnOnComputer(User user, ComputerClient rootView){
         if(timer != null){
             timer.stop();
             timer = null;
@@ -52,20 +53,19 @@ public class Computer {
         }
         userUsing = user;
         timeStart = new Date();
-        totalMinutes = convertMoneyToTimeRemaining(user.getRemainingAmount(), price);
-        usedByMinute = 0;
-        remainingByMinute = totalMinutes;
+        totalSeconds = convertMoneyToTimeRemaining(user.getRemainingAmount(), price);
+        usedBySecond = 0;
+        remainingBySecond = totalSeconds;
         currentDate = new Date();
         status = "Using";
         
-        count = 0;
         timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                count++;
-                usedByMinute = count / 60;
-                remainingByMinute = totalMinutes - usedByMinute;
-                user.setRemainingAmount(convertTimeRemainingToMoney(remainingByMinute, price));
+                usedBySecond++;
+                remainingBySecond = totalSeconds - usedBySecond;
+                user.setRemainingAmount(convertTimeRemainingToMoney(remainingBySecond, price));
+                rootView.refeshTable();
             }
         });
         timer.start();
@@ -79,19 +79,19 @@ public class Computer {
         price = 0;
         userUsing = null;
         timeStart = null;
-        totalMinutes = 0;
-        usedByMinute = 0;
-        remainingByMinute = 0;
+        totalSeconds = 0;
+        usedBySecond = 0;
+        remainingBySecond = 0;
         currentDate = null;
         status = "Off";
     }
     
     public int convertMoneyToTimeRemaining(int remainingAmount, int price){
-        return Math.round((remainingAmount / (float) price) * 60);
+        return Math.round((remainingAmount / (float) price) * 3600);
     }
     
-    public int convertTimeRemainingToMoney(int remainingByMninute, int price){
-        return (int) ((remainingByMninute / 60.0) * price);
+    public int convertTimeRemainingToMoney(int remainingBySecond, int price){
+        return (int) ((remainingBySecond / 3600.0) * price);
     }
     
     public String getComputerName() {
@@ -126,20 +126,20 @@ public class Computer {
         this.timeStart = timeStart;
     }
 
-    public int getUsedByMinute() {
-        return usedByMinute;
+    public int getUsedBySecond() {
+        return usedBySecond;
     }
 
-    public void setUsedByMinute(int usedByMinute) {
-        this.usedByMinute = usedByMinute;
+    public void setUsedBySecond(int usedBySecond) {
+        this.usedBySecond = usedBySecond;
     }
 
-    public int getRemainingByMinute() {
-        return remainingByMinute;
+    public int getRemainingBySecond() {
+        return remainingBySecond;
     }
 
-    public void setRemainingByMinute(int remainingByMinute) {
-        this.remainingByMinute = remainingByMinute;
+    public void setRemainingBySecond(int remainingBySecond) {
+        this.remainingBySecond = remainingBySecond;
     }
 
     public int getPrice() {

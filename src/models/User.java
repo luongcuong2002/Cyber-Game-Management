@@ -6,16 +6,18 @@ public class User {
     private int remainingAmount;
     private String userGroupName;
 
-    public User(String userName, String password) {
-        this.userName = userName;
+    public User(String userName, String password, String userGroupName) {
+        this.userName = userName.toUpperCase();
         this.password = password;
         this.remainingAmount = 0;
+        this.userGroupName = userGroupName;
     }
 
-    public User(String userName, String password, int topUpAmount, int usedAmount, int remainingAmount) {
-        this.userName = userName;
+    public User(String userName, String password, int remainingAmount, String userGroupName) {
+        this.userName = userName.toUpperCase();
         this.password = password;
         this.remainingAmount = remainingAmount;
+        this.userGroupName = userGroupName;
     }
     
     
@@ -25,7 +27,7 @@ public class User {
     }
 
     public void setUserName(String userName) {
-        this.userName = userName;
+        this.userName = userName.toUpperCase();
     }
 
     public String getPassword() {

@@ -6,11 +6,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 
 public class MenuPanel extends JPanel implements ActionListener{
     
-    private JButton btnFunction, btnSystem, btnReport, btnLanguage, btnHelper;
+    private JMenuItem btnFunction, btnSystem, btnReport, btnLanguage, btnHelper;
     
     public MenuPanel(){
         this.setLayout(new FlowLayout(FlowLayout.LEFT));
@@ -57,14 +58,14 @@ public class MenuPanel extends JPanel implements ActionListener{
         setColorForButton(btnHelper, Color.getColor("#00ffffff"), Color.black);
     }
     
-    private void initButton(JButton jButton, String textString, String actionCommand){
-        jButton = new JButton(textString);
+    private void initButton(JMenuItem jButton, String textString, String actionCommand){
+        jButton = new JMenuItem(textString);
         jButton.setActionCommand(actionCommand);
         jButton.addActionListener(this);
         this.add(jButton);
     }
     
-    private void setColorForButton(JButton button, Color backgroundColor, Color foregroundColor){
+    private void setColorForButton(JMenuItem button, Color backgroundColor, Color foregroundColor){
         button.setBackground(backgroundColor);
         button.setForeground(foregroundColor);
     }
