@@ -16,11 +16,20 @@ public class MenuPanel extends JPanel implements ActionListener{
     public MenuPanel(){
         this.setLayout(new FlowLayout(FlowLayout.LEFT));
         
-        initButton(btnFunction, "Chức năng", "bntFunction");
-        initButton(btnSystem, "Hệ thống", "btnSystem");
-        initButton(btnReport, "Báo cáo", "btnReport");
-        initButton(btnLanguage, "Ngôn ngữ", "btnLanguage");
-        initButton(btnHelper, "Trợ giúp", "btnHelper");
+        btnFunction = new JMenuItem("Chức năng");
+        initButton(btnFunction, "btnFunction");
+        
+        btnSystem = new JMenuItem("Hệ thống");
+        initButton(btnSystem,"btnSystem");
+        
+        btnReport = new JMenuItem("Báo cáo");
+        initButton(btnReport, "btnReport");
+        
+        btnLanguage = new JMenuItem("Ngôn ngữ");
+        initButton(btnLanguage, "btnLanguage");
+        
+        btnHelper = new JMenuItem("Trợ giúp");
+        initButton(btnHelper, "btnHelper");
     }
 
     @Override
@@ -58,15 +67,14 @@ public class MenuPanel extends JPanel implements ActionListener{
         setColorForButton(btnHelper, Color.getColor("#00ffffff"), Color.black);
     }
     
-    private void initButton(JMenuItem jButton, String textString, String actionCommand){
-        jButton = new JMenuItem(textString);
-        jButton.setActionCommand(actionCommand);
-        jButton.addActionListener(this);
-        this.add(jButton);
+    private void initButton(JMenuItem menuItem, String actionCommand){
+        menuItem.setActionCommand(actionCommand);
+        menuItem.addActionListener(this);
+        this.add(menuItem);
     }
     
-    private void setColorForButton(JMenuItem button, Color backgroundColor, Color foregroundColor){
-        button.setBackground(backgroundColor);
-        button.setForeground(foregroundColor);
+    private void setColorForButton(JMenuItem menuItem, Color backgroundColor, Color foregroundColor){
+        menuItem.setBackground(backgroundColor);
+        menuItem.setForeground(foregroundColor);
     }
 }

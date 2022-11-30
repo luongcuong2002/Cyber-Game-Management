@@ -2,6 +2,8 @@
 package views.tabs;
 
 import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class ParentFrame extends JTabbedPane{
     
@@ -15,5 +17,14 @@ public class ParentFrame extends JTabbedPane{
         this.addTab("Tài khoản", accountTab);
         this.addTab("Nhật ký hệ thống", systemHistoryTab);
         this.addTab("Nhật ký giao dịch", transactionHistoryTab);
+        
+        this.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                if(ParentFrame.this.getSelectedIndex() == 1){ // account
+                    accountTab.refeshTable();
+                }
+            }
+        });
     }
 }

@@ -2,20 +2,25 @@ package views.tabs;
 
 import data.Data;
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Vector;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import models.Computer;
-import views.dialog.ComputerClientPopUp;
+import models.User;
+import views.popup.ComputerClientPopUp;
 
 public class ComputerClient extends JPanel{
     
@@ -29,7 +34,10 @@ public class ComputerClient extends JPanel{
         setupTable();
         
         this.setLayout(new BorderLayout());
-        this.add(table, BorderLayout.CENTER);
+        
+        JScrollPane scrollPane = new JScrollPane(table);
+        
+        this.add(scrollPane, BorderLayout.CENTER);
     }
     
     private void setupTable(){
@@ -47,6 +55,7 @@ public class ComputerClient extends JPanel{
                         tableSelectedRow = r;
                     } else {
                         table.clearSelection();
+                        tableSelectedRow = -1;
                     }
 
                     int rowindex = table.getSelectedRow();
@@ -65,14 +74,31 @@ public class ComputerClient extends JPanel{
                     return;
                 }
                 if (event.getClickCount() == 2) {
-                    System.out.println("double clicked");
                     Point pnt = event.getPoint();
                     int row = table.rowAtPoint(pnt);
                     tableSelectedRow = row;
+                    if(row < 0) return;
+                    
+                    String computerName = (String) table.getValueAt(row, 0);
+                    if(computerName.equals(Data.listComputers.get(row).getComputerName())){ // useful when table unsorted
+                        User userUsing = Data.listComputers.get(row).getUserUsing();
+                        if(userUsing != null && userUsing.getUserGroupName().equals("Guest") && userUsing.isIsPrepaid() == false){
+                            Data.listComputers.get(row).charge(ComputerClient.this);
+                            return;
+                        }
+                    }
+                    for(int i = 0; i < Data.listComputers.size(); i++){
+                        if(Data.listComputers.get(i).getComputerName().equals(computerName)){
+                            User userUsing = Data.listComputers.get(i).getUserUsing();
+                            if(userUsing != null && userUsing.getUserGroupName().equals("Guest") && userUsing.isIsPrepaid() == false){
+                                Data.listComputers.get(i).charge(ComputerClient.this);
+                                return;
+                            }
+                        }
+                    }
                     return;
                 }
                 if (event.getClickCount() == 1) {
-                    System.out.println("clicked");
                     Point pnt = event.getPoint();
                     int row = table.rowAtPoint(pnt);
                     tableSelectedRow = row;
@@ -90,11 +116,11 @@ public class ComputerClient extends JPanel{
         columnNames.add("Bắt đầu");
         columnNames.add("Sử dụng");
         columnNames.add("Còn lại");
-        columnNames.add("Tiền");
+        columnNames.add("Tiền đã dùng");
         columnNames.add("Ngày");
-        columnNames.add("Nhóm");
+        columnNames.add("Nhóm máy");
         
-        SimpleDateFormat formater = new SimpleDateFormat("HH:mm:ss");
+        SimpleDateFormat formater;
         
         Vector<Vector<String>> data = new Vector<>();
         for(int i = 0; i < Data.listComputers.size();i++){
@@ -104,7 +130,10 @@ public class ComputerClient extends JPanel{
             row.add(computer.getStatus());
             if(computer.getUserUsing() != null){
                 row.add(computer.getUserUsing().getUserName());
+                
+                formater = new SimpleDateFormat("HH:mm:ss");
                 row.add(formater.format(computer.getTimeStart()));
+                
                 int hour = computer.getUsedBySecond() / 3600;
                 int minute = (computer.getUsedBySecond() % 3600) / 60;
                 int second = (computer.getUsedBySecond() % 3600) % 60;
@@ -115,7 +144,11 @@ public class ComputerClient extends JPanel{
                 second = (computer.getRemainingBySecond() % 3600) % 60;
                 String timeRemaining = hour + "h " + minute + "m " + second + "s";
                 row.add(timeRemaining);
-                row.add(String.valueOf((int) (computer.getUsedBySecond()/ 3600.0) * computer.getPrice()));
+                row.add(NumberFormat.getNumberInstance().format((int) ((computer.getUsedBySecond() / 3600.0) * computer.getPrice())));
+                
+                formater = new SimpleDateFormat("dd-MM-yyyy");
+                row.add(formater.format(computer.getCurrentDate()));
+                
                 row.add(computer.getComputerGroup().getGroupName());
             }else{
                 row.add("");

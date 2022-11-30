@@ -5,10 +5,16 @@
  */
 package models;
 
+import data.Data;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.Timer;
 import views.tabs.ComputerClient;
 
@@ -27,8 +33,6 @@ public class Computer {
     private Date currentDate;
     private ComputerGroup computerGroup;
     private Timer timer;
-    
-    private int totalSeconds = 0;
 
     public Computer(String computerName, ComputerGroup computerGroup) {
         this.computerName = computerName;
@@ -41,37 +45,48 @@ public class Computer {
             timer.stop();
             timer = null;
         }
-        for(int i = 0; i < computerGroup.getPriceForEachUserGroups().size(); i++){
-            if(computerGroup.getPriceForEachUserGroups().get(i).getUserGroupName().equals(user.getUserGroupName())){
-                price = computerGroup.getPriceForEachUserGroups().get(i).getPrice();
-                break;
+        if(!user.getUserGroupName().equals("Admin")){
+            for(int i = 0; i < computerGroup.getPriceForEachUserGroups().size(); i++){
+                if(computerGroup.getPriceForEachUserGroups().get(i).getUserGroupName().equals(user.getUserGroupName())){
+                    price = computerGroup.getPriceForEachUserGroups().get(i).getPrice();
+                    break;
+                }
             }
-        }
-        if(price <= 0){
-            System.out.println("Không tìm thấy giá dành cho người dùng!");
-            return;
+            if(price <= 0){
+                System.out.println("Không tìm thấy giá dành cho người dùng!");
+                return;
+            }
+            if(user.getUserGroupName().equals("Guest") && !user.isIsPrepaid()){
+                user.setRemainingAmount(1000 * price); // postpaid user, remaining start with 1000h
+            }
         }
         userUsing = user;
         timeStart = new Date();
-        totalSeconds = convertMoneyToTimeRemaining(user.getRemainingAmount(), price);
         usedBySecond = 0;
-        remainingBySecond = totalSeconds;
+        remainingBySecond = convertMoneyToTimeRemaining(user.getRemainingAmount(), price);
         currentDate = new Date();
         status = "Using";
         
+        rootView.refeshTable();
         timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 usedBySecond++;
-                remainingBySecond = totalSeconds - usedBySecond;
-                user.setRemainingAmount(convertTimeRemainingToMoney(remainingBySecond, price));
+                if(!user.getUserGroupName().equals("Admin")){
+                    remainingBySecond = convertMoneyToTimeRemaining(user.getRemainingAmount(), price) - usedBySecond;
+                    user.setRemainingAmount(convertTimeRemainingToMoney(remainingBySecond, price));
+                    if(user.getRemainingAmount() <= 0){
+                        user.setRemainingAmount(0);
+                        turnOffComputer(rootView);
+                    }
+                }
                 rootView.refeshTable();
             }
         });
         timer.start();
     }
     
-    public void turnOffComputer(){
+    public void turnOffComputer(ComputerClient rootView){
         if(timer != null){
             timer.stop();
             timer = null;
@@ -79,11 +94,22 @@ public class Computer {
         price = 0;
         userUsing = null;
         timeStart = null;
-        totalSeconds = 0;
         usedBySecond = 0;
         remainingBySecond = 0;
         currentDate = null;
         status = "Off";
+        rootView.refeshTable();
+    }
+    
+    public void charge(ComputerClient rootView){
+        int totalAmount = convertTimeRemainingToMoney(usedBySecond, price);
+        final JComponent[] inputs = new JComponent[] {
+            new JLabel("Số tiền phải thanh toán"), new JLabel(totalAmount + ""),
+        };
+        int result = JOptionPane.showConfirmDialog(null, inputs, "Thanh toán " + this.computerName, JOptionPane.PLAIN_MESSAGE);
+        if (result == JOptionPane.OK_OPTION) {
+            turnOffComputer(rootView);
+        }
     }
     
     public int convertMoneyToTimeRemaining(int remainingAmount, int price){
