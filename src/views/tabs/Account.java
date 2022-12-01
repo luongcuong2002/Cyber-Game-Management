@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Vector;
 import javax.imageio.ImageIO;
 import javax.swing.Icon;
@@ -32,6 +33,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import models.Computer;
+import models.PlaceholderTextField;
 import models.User;
 import screens.MainFrame;
 import views.popup.AccountPopup;
@@ -41,7 +43,8 @@ public class Account extends JPanel implements ActionListener{
     
     private JTable table;
     private JPanel controller, tableWrapper;
-    private JButton btnAdd, btnEdit, btnRemove;
+    private JButton btnAdd, btnEdit, btnRemove, btnRefresh, btnSearch;
+    private PlaceholderTextField edtInputToSearch;
     private AbstractTableModel tableModel;
     
     private int tableSelectedRow = -1;
@@ -98,14 +101,41 @@ public class Account extends JPanel implements ActionListener{
         } 
         catch (Exception e) {}
         
+        btnRefresh = new JButton();
+        btnRefresh.setActionCommand("btnRefresh");
+        btnRefresh.addActionListener(this);
+        btnRefresh.setPreferredSize(new Dimension(buttonSize,buttonSize));
+        try{
+            Image image = ImageIO.read(new File( mainUri + "ic_refresh.png")).getScaledInstance(buttonSize, buttonSize, Image.SCALE_DEFAULT);
+            btnRefresh.setIcon(new ImageIcon(image));
+        } 
+        catch (Exception e) {}
+
+        edtInputToSearch = new PlaceholderTextField("");
+        edtInputToSearch.setPlaceholder("Nhập tên tài khoản để tìm kiếm");
+        edtInputToSearch.setPreferredSize(new Dimension(200, buttonSize));
+        
+        btnSearch = new JButton();
+        btnSearch.setActionCommand("btnSearch");
+        btnSearch.addActionListener(this);
+        btnSearch.setPreferredSize(new Dimension(buttonSize,buttonSize));
+        try{
+            Image image = ImageIO.read(new File( mainUri + "ic_search.png")).getScaledInstance(buttonSize, buttonSize, Image.SCALE_DEFAULT);
+            btnSearch.setIcon(new ImageIcon(image));
+        } 
+        catch (Exception e) {}
+        
         controller.add(btnAdd);
         controller.add(btnEdit);
         controller.add(btnRemove);
+        controller.add(btnRefresh);
+        controller.add(edtInputToSearch);
+        controller.add(btnSearch);
     }
     
     private void setupTable(){
        
-        refeshTable();
+        refreshTable(Data.listUsers);
         table = new JTable(tableModel);
         
         table.addMouseListener(new MouseAdapter() {
@@ -137,14 +167,12 @@ public class Account extends JPanel implements ActionListener{
                     return;
                 }
                 if (event.getClickCount() == 2) {
-                    System.out.println("double clicked");
                     Point pnt = event.getPoint();
                     int row = table.rowAtPoint(pnt);
                     tableSelectedRow = row;
                     return;
                 }
                 if (event.getClickCount() == 1) {
-                    System.out.println("clicked");
                     Point pnt = event.getPoint();
                     int row = table.rowAtPoint(pnt);
                     tableSelectedRow = row;
@@ -154,7 +182,7 @@ public class Account extends JPanel implements ActionListener{
         });
     }
     
-    public void refeshTable(){
+    public void refreshTable(ArrayList<User> list){
         Vector<String> columnNames = new Vector<>();
         columnNames.add("Tên người sử dụng");
         columnNames.add("Tiền còn lại");
@@ -162,9 +190,9 @@ public class Account extends JPanel implements ActionListener{
         columnNames.add("Tình trạng");
         
         Vector<Vector<String>> data = new Vector<>();
-        for(int i = 0; i < Data.listUsers.size();i++){
+        for(int i = 0; i < list.size();i++){
             Vector<String> row = new Vector<>();
-            User user = Data.listUsers.get(i);
+            User user = list.get(i);
             row.add(user.getUserName());
             row.add(user.getRemainingAmountToString());
             row.add(user.getUserGroupName());
@@ -238,7 +266,7 @@ public class Account extends JPanel implements ActionListener{
                         }
                     }
                     Data.listUsers.add(new User(userName.getText().trim(), String.valueOf(password.getPassword()).trim(), "Member"));
-                    refeshTable();
+                    refreshTable(Data.listUsers);
                 }
                 break;
             }
@@ -277,7 +305,7 @@ public class Account extends JPanel implements ActionListener{
                                         return;
                                     }
                                 }
-                                refeshTable();
+                                refreshTable(Data.listUsers);
                             }
                         }
                     }
@@ -298,12 +326,28 @@ public class Account extends JPanel implements ActionListener{
                                 return;
                             }
                             Data.listUsers.remove(user);
-                            refeshTable();
+                            refreshTable(Data.listUsers);
                             return;
                         }
                     }
-                    refeshTable();
+                    refreshTable(Data.listUsers);
                 }
+                break;
+            }
+            case "btnRefresh":{
+                refreshTable(Data.listUsers);
+                break;
+            }
+            case "btnSearch": {
+                String text = edtInputToSearch.getText().trim().toUpperCase();
+                edtInputToSearch.setText("");
+                ArrayList<User> list = new ArrayList<>();
+                for(int i = 0; i < Data.listUsers.size(); i++){
+                    if(Data.listUsers.get(i).getUserName().startsWith(text)){
+                        list.add(Data.listUsers.get(i));
+                    }
+                }
+                refreshTable(list);
                 break;
             }
         }

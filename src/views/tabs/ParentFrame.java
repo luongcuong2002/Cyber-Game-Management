@@ -1,6 +1,7 @@
 
 package views.tabs;
 
+import data.Data;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -22,7 +23,7 @@ public class ParentFrame extends JTabbedPane{
             @Override
             public void stateChanged(ChangeEvent e) {
                 if(ParentFrame.this.getSelectedIndex() == 1){ // account
-                    accountTab.refeshTable();
+                    accountTab.refreshTable(Data.listUsers);
                 }
             }
         });

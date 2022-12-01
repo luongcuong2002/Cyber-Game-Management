@@ -33,6 +33,8 @@ public class Computer {
     private Date currentDate;
     private ComputerGroup computerGroup;
     private Timer timer;
+    private String note = "";
+    private int totalMitute = 0;
 
     public Computer(String computerName, ComputerGroup computerGroup) {
         this.computerName = computerName;
@@ -63,24 +65,25 @@ public class Computer {
         userUsing = user;
         timeStart = new Date();
         usedBySecond = 0;
-        remainingBySecond = convertMoneyToTimeRemaining(user.getRemainingAmount(), price);
+        totalMitute = convertMoneyToTimeRemaining(user.getRemainingAmount(), price);
+        remainingBySecond = totalMitute;
         currentDate = new Date();
         status = "Using";
         
-        rootView.refeshTable();
+        rootView.refreshTable();
         timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 usedBySecond++;
                 if(!user.getUserGroupName().equals("Admin")){
-                    remainingBySecond = convertMoneyToTimeRemaining(user.getRemainingAmount(), price) - usedBySecond;
+                    remainingBySecond = totalMitute - usedBySecond;
                     user.setRemainingAmount(convertTimeRemainingToMoney(remainingBySecond, price));
                     if(user.getRemainingAmount() <= 0){
                         user.setRemainingAmount(0);
                         turnOffComputer(rootView);
                     }
                 }
-                rootView.refeshTable();
+                rootView.refreshTable();
             }
         });
         timer.start();
@@ -98,7 +101,7 @@ public class Computer {
         remainingBySecond = 0;
         currentDate = null;
         status = "Off";
-        rootView.refeshTable();
+        rootView.refreshTable();
     }
     
     public void charge(ComputerClient rootView){
@@ -191,7 +194,21 @@ public class Computer {
     public void setComputerGroup(ComputerGroup computerGroup) {
         this.computerGroup = computerGroup;
     }
-    
-    
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public int getTotalMitute() {
+        return totalMitute;
+    }
+
+    public void setTotalMitute(int totalMitute) {
+        this.totalMitute = totalMitute;
+    }
     
 }

@@ -39,6 +39,7 @@ public class ComputerClientPopUp extends JPopupMenu implements ActionListener{
     private JMenuItem btnTurnOnWithUserPermission, btnTurnOnWithAdminPermission;
     private JMenuItem btnPrePaidLogin, btnPostPaidLogin;
     private JMenuItem btnCharge, btnSignOut;
+    private JMenuItem btnTopup, btnNoteOfUser, btnService;
     
     public ComputerClientPopUp(ComputerClient parentView, String computerName) {
         
@@ -71,25 +72,67 @@ public class ComputerClientPopUp extends JPopupMenu implements ActionListener{
         btnCharge.setActionCommand("btnCharge");
         btnCharge.addActionListener(this);
         
-        btnSignOut = new JMenuItem("Đăng xuất");
+        btnSignOut = new JMenuItem("Khóa máy");
         btnSignOut.setActionCommand("btnSignOut");
         btnSignOut.addActionListener(this);
         
+        btnTopup = new JMenuItem("Nạp tiền");
+        btnTopup.setActionCommand("btnTopup");
+        btnTopup.addActionListener(this);
+        
+        btnNoteOfUser = new JMenuItem("Ghi chú của người dùng");
+        btnNoteOfUser.setActionCommand("btnNoteOfUser");
+        btnNoteOfUser.addActionListener(this);
+        
+        btnService = new JMenuItem("Yêu cầu dịch vụ");
+        btnService.setActionCommand("btnService");
+        btnService.addActionListener(this);
+        
+        this.add(btnPostPaidLogin);
+        this.add(btnPrePaidLogin);
+        this.add(btnCharge);
+        this.add(btnTopup);
+        this.add(btnNoteOfUser);
+        this.add(btnSignOut);
+        this.add(btnTurnOnWithAdminPermission);
+        this.add(btnTurnOnWithUserPermission);
+        this.add(btnService);
+        
         if(computer.getUserUsing() == null){
-            this.add(btnPrePaidLogin);
-            this.add(btnPostPaidLogin);
-            this.add(btnTurnOnWithUserPermission);
-            this.add(btnTurnOnWithAdminPermission);
+            btnCharge.setEnabled(false);
+            btnTopup.setEnabled(false);
+            btnNoteOfUser.setEnabled(false);
+            btnSignOut.setEnabled(false);
+            btnService.setEnabled(false);
         }else if(computer.getUserUsing().getUserGroupName().equals("Member")){
-            this.add(btnSignOut);
+            btnPostPaidLogin.setEnabled(false);
+            btnPrePaidLogin.setEnabled(false);
+            btnCharge.setEnabled(false);
+            btnTurnOnWithAdminPermission.setEnabled(false);
+            btnTurnOnWithUserPermission.setEnabled(false);
         }else if(computer.getUserUsing().getUserGroupName().equals("Guest")){
             if(computer.getUserUsing().isIsPrepaid()){
-                this.add(btnSignOut);
+                btnPostPaidLogin.setEnabled(false);
+                btnPrePaidLogin.setEnabled(false);
+                btnCharge.setEnabled(false);
+                btnTurnOnWithAdminPermission.setEnabled(false);
+                btnTurnOnWithUserPermission.setEnabled(false);
             }else{
-                this.add(btnCharge);
+                btnPostPaidLogin.setEnabled(false);
+                btnPrePaidLogin.setEnabled(false);
+                btnTopup.setEnabled(false);
+                btnSignOut.setEnabled(false);
+                btnTurnOnWithAdminPermission.setEnabled(false);
+                btnTurnOnWithUserPermission.setEnabled(false);
             }
         }else if(computer.getUserUsing().getUserGroupName().equals("Admin")){
-            this.add(btnSignOut);
+            btnPostPaidLogin.setEnabled(false);
+            btnPrePaidLogin.setEnabled(false);
+            btnCharge.setEnabled(false);
+            btnTopup.setEnabled(false);
+            btnTurnOnWithAdminPermission.setEnabled(false);
+            btnTurnOnWithUserPermission.setEnabled(false);
+            btnService.setEnabled(false);
         }
     }
 
@@ -149,13 +192,7 @@ public class ComputerClientPopUp extends JPopupMenu implements ActionListener{
                 };
                 int result = JOptionPane.showConfirmDialog(null, inputs, "Đăng nhập bằng tài khoản hội viên", JOptionPane.PLAIN_MESSAGE);
                 if (result == JOptionPane.OK_OPTION) {
-                    User user = null;
-                    for(int i = 0; i < Data.listUsers.size(); i++){
-                        user = Data.listUsers.get(i);
-                        if(user.getUserName().equals(userName.getText().trim().toUpperCase())){
-                            break;
-                        }
-                    }
+                    User user = Data.getUserByUserName(userName.getText().trim().toUpperCase());
                     if(user == null){
                         JOptionPane.showMessageDialog(this,
                         "Tài khoản này không tồn tại!",
@@ -187,6 +224,40 @@ public class ComputerClientPopUp extends JPopupMenu implements ActionListener{
                         if(!userIsUsing){
                             computer.turnOnComputer(user, parentView);
                         }
+                    }
+                }
+                break;
+            }
+            case "btnTopup": {
+                User user = Data.getUserByUserName(computer.getUserUsing().getUserName());
+                if(user != null){
+                    JTextField topUpAmount = new JTextField();
+                    final JComponent[] inputs = new JComponent[] {
+                        new JLabel("Số tiền nạp"), topUpAmount
+                    };
+                    int result = JOptionPane.showConfirmDialog(null, inputs, "Nạp tiền", JOptionPane.PLAIN_MESSAGE);
+                    if (result == JOptionPane.OK_OPTION) {
+                        String text = topUpAmount.getText().trim();
+                        if(text.isEmpty()){
+                            JOptionPane.showMessageDialog(this,
+                            "Số tiền không được để trống!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                            return;
+                        }
+                        try {
+                            int amount = Integer.parseInt(text);
+                            user.topUp(amount);
+                            if(user.getRemainingAmount() < 0){
+                                user.setRemainingAmount(0);
+                            }
+                        } catch (NumberFormatException e1) {
+                        JOptionPane.showMessageDialog(this,
+                            "Input không hợp lệ!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                        }
+                        parentView.refreshTable();
                     }
                 }
                 break;

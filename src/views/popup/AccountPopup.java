@@ -89,7 +89,7 @@ public class AccountPopup extends JPopupMenu implements ActionListener{
                     }
                     try {
                         int amount = Integer.parseInt(text);
-                        user.setRemainingAmount(user.getRemainingAmount() + amount);
+                        user.topUp(amount);
                         if(user.getRemainingAmount() < 0){
                             user.setRemainingAmount(0);
                         }
@@ -99,7 +99,7 @@ public class AccountPopup extends JPopupMenu implements ActionListener{
                         "Warning",
                         JOptionPane.WARNING_MESSAGE);
                     }
-                    parentView.refeshTable();
+                    parentView.refreshTable(Data.listUsers);
                 }
                 break;
             }

@@ -1,5 +1,6 @@
 package models;
 
+import data.Data;
 import java.text.NumberFormat;
 import java.util.Locale;
 
@@ -52,6 +53,18 @@ public class User {
 
     public void setRemainingAmount(int remainingAmount) {
         this.remainingAmount = remainingAmount;
+    }
+    
+    public void topUp(int topUpAmount){
+        this.remainingAmount += topUpAmount;
+        if(this.remainingAmount == 0) this.remainingAmount = 0;
+        for(int i = 0; i < Data.listComputers.size(); i++){
+            User user = Data.listComputers.get(i).getUserUsing();
+            if(user != null && user.getUserName().equals(this.getUserName())){
+                Data.listComputers.get(i).setTotalMitute(
+                        Data.listComputers.get(i).convertMoneyToTimeRemaining(remainingAmount, Data.listComputers.get(i).getPrice()));
+            }
+        }
     }
 
     public String getUserGroupName() {

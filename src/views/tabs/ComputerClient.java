@@ -42,7 +42,7 @@ public class ComputerClient extends JPanel{
     
     private void setupTable(){
        
-        refeshTable();
+        refreshTable();
         table = new JTable(tableModel);
         
         table.addMouseListener(new MouseAdapter() {
@@ -92,8 +92,11 @@ public class ComputerClient extends JPanel{
                             User userUsing = Data.listComputers.get(i).getUserUsing();
                             if(userUsing != null && userUsing.getUserGroupName().equals("Guest") && userUsing.isIsPrepaid() == false){
                                 Data.listComputers.get(i).charge(ComputerClient.this);
-                                return;
                             }
+                            if(userUsing == null){
+                                Data.listComputers.get(i).turnOnComputer(new User(Data.listComputers.get(i).getComputerName(), "Guest", false ), ComputerClient.this);
+                            }
+                            return;
                         }
                     }
                     return;
@@ -108,7 +111,7 @@ public class ComputerClient extends JPanel{
         });
     }
     
-    public void refeshTable(){
+    public void refreshTable(){
         Vector<String> columnNames = new Vector<>();
         columnNames.add("Tên");
         columnNames.add("Tình trạng");
@@ -119,6 +122,7 @@ public class ComputerClient extends JPanel{
         columnNames.add("Tiền đã dùng");
         columnNames.add("Ngày");
         columnNames.add("Nhóm máy");
+        columnNames.add("Ghi chú");
         
         SimpleDateFormat formater;
         
@@ -148,8 +152,6 @@ public class ComputerClient extends JPanel{
                 
                 formater = new SimpleDateFormat("dd-MM-yyyy");
                 row.add(formater.format(computer.getCurrentDate()));
-                
-                row.add(computer.getComputerGroup().getGroupName());
             }else{
                 row.add("");
                 row.add("");
@@ -158,6 +160,8 @@ public class ComputerClient extends JPanel{
                 row.add("");
                 row.add("");
             }
+            row.add(computer.getComputerGroup().getGroupName());
+            row.add(computer.getNote());
             data.add(row);
         }
         

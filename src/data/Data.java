@@ -65,4 +65,23 @@ public abstract class Data {
         listUsers.add(new User("User6", "1", "Member"));
         listUsers.add(new User("User7", "1", "Member"));
     }
+    
+    public static User getUserByUserName(String userName){
+        for(int i = 0; i < Data.listUsers.size(); i++){
+            if(Data.listUsers.get(i).getUserName().equals(userName)){
+                return Data.listUsers.get(i);
+            }
+        }
+        return null;
+    }
+    
+    public static User getUserPrePaidByUserName(String userName){
+        for(int i = 0; i < Data.listUsers.size(); i++){
+            User user = Data.listUsers.get(i);
+            if(user.getUserGroupName().equals("Guest") && user.isIsPrepaid()){
+                return user;
+            }
+        }
+        return null;
+    }
 }
