@@ -1,10 +1,12 @@
 package views.tabs;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import data.Data;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.ActionEvent;
@@ -12,11 +14,16 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -28,6 +35,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.border.AbstractBorder;
+import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -49,9 +58,7 @@ public class Account extends JPanel implements ActionListener{
     
     private int tableSelectedRow = -1;
     private int buttonSize = 25;
-    
-    private final String mainUri = System.getProperty("user.dir") + File.separator + "res" + File.separator + "icons" + File.separator;
-    
+        
     public Account(){
         
         this.setLayout(new BorderLayout());
@@ -69,47 +76,45 @@ public class Account extends JPanel implements ActionListener{
     }
     
     private void setupController(){
+                
+        Border border = BorderFactory.createLineBorder(new Color(50,50,150, 50), 1, true);
+        
         controller = new JPanel(new FlowLayout(FlowLayout.LEFT));
         btnAdd = new JButton();
         btnAdd.setActionCommand("btnAdd");
         btnAdd.addActionListener(this);
         btnAdd.setPreferredSize(new Dimension(buttonSize,buttonSize));
-        try{
-            Image image = ImageIO.read(new File( mainUri + "add_icon.png")).getScaledInstance(buttonSize, buttonSize, Image.SCALE_DEFAULT);
-            btnAdd.setIcon(new ImageIcon(image));
-        } 
-        catch (Exception e) {}
+        btnAdd.setIcon(new FlatSVGIcon("icons/add_circle_black_24dp.svg", buttonSize, buttonSize));
+        btnAdd.setBorder(border);
+        btnAdd.setFocusPainted(false);
+        btnAdd.setContentAreaFilled(false);
         
         btnEdit = new JButton();
         btnEdit.setActionCommand("btnEdit");
         btnEdit.addActionListener(this);
         btnEdit.setPreferredSize(new Dimension(buttonSize,buttonSize));
-        try{
-            Image image = ImageIO.read(new File( mainUri + "ic_edit.png")).getScaledInstance(buttonSize, buttonSize, Image.SCALE_DEFAULT);
-            btnEdit.setIcon(new ImageIcon(image));
-        } 
-        catch (Exception e) {}
-        
+        btnEdit.setIcon(new FlatSVGIcon("icons/ic_edit.svg", buttonSize, buttonSize));
+        btnEdit.setBorder(border);
+        btnEdit.setFocusPainted(false);
+        btnEdit.setContentAreaFilled(false);
         
         btnRemove = new JButton();
         btnRemove.setActionCommand("btnRemove");
         btnRemove.addActionListener(this);
         btnRemove.setPreferredSize(new Dimension(buttonSize,buttonSize));
-        try{
-            Image image = ImageIO.read(new File( mainUri + "remove_ic.png")).getScaledInstance(buttonSize, buttonSize, Image.SCALE_DEFAULT);
-            btnRemove.setIcon(new ImageIcon(image));
-        } 
-        catch (Exception e) {}
+        btnRemove.setIcon(new FlatSVGIcon("icons/ic_remove.svg", buttonSize, buttonSize));
+        btnRemove.setBorder(border);
+        btnRemove.setFocusPainted(false);
+        btnRemove.setContentAreaFilled(false);
         
         btnRefresh = new JButton();
         btnRefresh.setActionCommand("btnRefresh");
         btnRefresh.addActionListener(this);
         btnRefresh.setPreferredSize(new Dimension(buttonSize,buttonSize));
-        try{
-            Image image = ImageIO.read(new File( mainUri + "ic_refresh.png")).getScaledInstance(buttonSize, buttonSize, Image.SCALE_DEFAULT);
-            btnRefresh.setIcon(new ImageIcon(image));
-        } 
-        catch (Exception e) {}
+        btnRefresh.setIcon(new FlatSVGIcon("icons/ic_refresh.svg", buttonSize, buttonSize));
+        btnRefresh.setBorder(border);
+        btnRefresh.setFocusPainted(false);
+        btnRefresh.setContentAreaFilled(false);
 
         edtInputToSearch = new PlaceholderTextField("");
         edtInputToSearch.setPlaceholder("Nhập tên tài khoản để tìm kiếm");
@@ -119,15 +124,20 @@ public class Account extends JPanel implements ActionListener{
         btnSearch.setActionCommand("btnSearch");
         btnSearch.addActionListener(this);
         btnSearch.setPreferredSize(new Dimension(buttonSize,buttonSize));
-        try{
-            Image image = ImageIO.read(new File( mainUri + "ic_search.png")).getScaledInstance(buttonSize, buttonSize, Image.SCALE_DEFAULT);
-            btnSearch.setIcon(new ImageIcon(image));
-        } 
-        catch (Exception e) {}
+        btnSearch.setIcon(new FlatSVGIcon("icons/ic_search.svg", buttonSize, buttonSize));
+        btnSearch.setBorder(border);
+        btnSearch.setFocusPainted(false);
+        btnSearch.setContentAreaFilled(false);
         
         controller.add(btnAdd);
         controller.add(btnEdit);
         controller.add(btnRemove);
+        controller.add(new JPanel(){ // adding space
+            @Override
+            public Dimension preferredSize() {
+                return new Dimension(buttonSize,0);
+            }
+        });
         controller.add(btnRefresh);
         controller.add(edtInputToSearch);
         controller.add(btnSearch);
