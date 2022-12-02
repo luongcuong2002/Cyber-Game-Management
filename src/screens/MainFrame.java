@@ -2,6 +2,7 @@ package screens;
 
 import data.Data;
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.IOException;
@@ -23,6 +24,7 @@ public class MainFrame extends JFrame{
         this.setBounds(dimension.width / 2 - SCREEN_WIDTH / 2, dimension.height / 2 - SCREEN_HEIGHT / 2, SCREEN_WIDTH, SCREEN_HEIGHT);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);       
         
+        this.setBackground(Color.white);
         this.add(menuPanel, BorderLayout.NORTH);
         this.add(parentFrame, BorderLayout.CENTER);
     }

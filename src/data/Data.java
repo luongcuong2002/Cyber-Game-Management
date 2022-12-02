@@ -84,4 +84,13 @@ public abstract class Data {
         }
         return null;
     }
+    
+    public static Computer getComputerByComputerName(String computerName){
+        for(int i = 0; i < Data.listComputers.size(); i++){
+            if(Data.listComputers.get(i).getComputerName().equals(computerName)){
+                return Data.listComputers.get(i);
+            }
+        }
+        return null;
+    }
 }

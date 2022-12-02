@@ -6,6 +6,11 @@
 package models;
 
 import data.Data;
+import java.awt.Button;
+import java.awt.Dialog;
+import java.awt.FlowLayout;
+import java.awt.Frame;
+import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
@@ -16,6 +21,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.Timer;
+import views.dialog.Bill;
 import views.tabs.ComputerClient;
 
 /**
@@ -105,14 +111,16 @@ public class Computer {
     }
     
     public void charge(ComputerClient rootView){
-        int totalAmount = convertTimeRemainingToMoney(usedBySecond, price);
-        final JComponent[] inputs = new JComponent[] {
-            new JLabel("Số tiền phải thanh toán"), new JLabel(totalAmount + ""),
-        };
-        int result = JOptionPane.showConfirmDialog(null, inputs, "Thanh toán " + this.computerName, JOptionPane.PLAIN_MESSAGE);
-        if (result == JOptionPane.OK_OPTION) {
-            turnOffComputer(rootView);
-        }
+//        int totalAmount = convertTimeRemainingToMoney(usedBySecond, price);
+//        final JComponent[] inputs = new JComponent[] {
+//            new JLabel("Số tiền phải thanh toán"), new JLabel(totalAmount + ""),
+//        };
+//        int result = JOptionPane.showConfirmDialog(null, inputs, "Thanh toán " + this.computerName, JOptionPane.PLAIN_MESSAGE);
+//        if (result == JOptionPane.OK_OPTION) {
+//            turnOffComputer(rootView);
+//        }
+          Bill bill = new Bill();
+          bill.setVisible(true);
     }
     
     public int convertMoneyToTimeRemaining(int remainingAmount, int price){

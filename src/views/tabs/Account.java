@@ -4,6 +4,7 @@ import com.formdev.flatlaf.extras.FlatSVGIcon;
 import data.Data;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
@@ -40,6 +41,7 @@ import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import models.Computer;
 import models.PlaceholderTextField;
@@ -84,7 +86,7 @@ public class Account extends JPanel implements ActionListener{
         btnAdd.setActionCommand("btnAdd");
         btnAdd.addActionListener(this);
         btnAdd.setPreferredSize(new Dimension(buttonSize,buttonSize));
-        btnAdd.setIcon(new FlatSVGIcon("icons/add_circle_black_24dp.svg", buttonSize, buttonSize));
+        btnAdd.setIcon(new FlatSVGIcon("icons/ic_add.svg", buttonSize, buttonSize));
         btnAdd.setBorder(border);
         btnAdd.setFocusPainted(false);
         btnAdd.setContentAreaFilled(false);
@@ -147,7 +149,6 @@ public class Account extends JPanel implements ActionListener{
        
         refreshTable(Data.listUsers);
         table = new JTable(tableModel);
-        
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent event) {
@@ -222,7 +223,7 @@ public class Account extends JPanel implements ActionListener{
             if(tableSelectedRow > -1) table.setRowSelectionInterval(tableSelectedRow, tableSelectedRow);
         };
     }
-
+  
     public AbstractTableModel getTableModel() {
         return tableModel;
     }

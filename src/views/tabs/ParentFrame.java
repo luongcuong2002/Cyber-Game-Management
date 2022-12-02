@@ -2,6 +2,7 @@
 package views.tabs;
 
 import data.Data;
+import java.awt.Color;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -14,6 +15,7 @@ public class ParentFrame extends JTabbedPane{
     private TransactionHistory transactionHistoryTab = new TransactionHistory();
     
     public ParentFrame(){
+        this.setBackground(Color.white);
         this.addTab("Máy trạm", computerClientTab);
         this.addTab("Tài khoản", accountTab);
         this.addTab("Nhật ký hệ thống", systemHistoryTab);
