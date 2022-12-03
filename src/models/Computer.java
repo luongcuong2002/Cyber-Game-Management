@@ -24,7 +24,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.Timer;
-import views.dialog.Bill;
+import views.dialog.BillDialog;
 import views.tabs.ComputerClient;
 
 /**
@@ -45,7 +45,7 @@ public class Computer {
     private String note = "";
     private int totalMitute = 0;
     
-    private ArrayList<ServiceOrdered> listServicesOrdered = new ArrayList<ServiceOrdered>();
+    private ArrayList<ServiceCanBeOrdered> listServicesOrdered = new ArrayList<ServiceCanBeOrdered>();
     private Map<String, Integer> transactionTransferred = new HashMap<String, Integer>();
 
     public Computer(String computerName, ComputerGroup computerGroup) {
@@ -129,7 +129,7 @@ public class Computer {
 //        if (result == JOptionPane.OK_OPTION) {
 //            turnOffComputer(rootView);
 //        }
-          Bill bill = new Bill(this);
+          BillDialog bill = new BillDialog(this);
           bill.setVisible(true);
     }
     
@@ -260,11 +260,11 @@ public class Computer {
         this.totalMitute = totalMitute;
     }
 
-    public ArrayList<ServiceOrdered> getListServicesOrdered() {
+    public ArrayList<ServiceCanBeOrdered> getListServicesOrdered() {
         return listServicesOrdered;
     }
 
-    public void setListServicesOrdered(ArrayList<ServiceOrdered> listServicesOrdered) {
+    public void setListServicesOrdered(ArrayList<ServiceCanBeOrdered> listServicesOrdered) {
         this.listServicesOrdered = listServicesOrdered;
     }
 

@@ -5,10 +5,12 @@
  */
 package views.tabs;
 
+import javax.swing.JPanel;
+
 /**
  *
  * @author ADMIN
  */
-public class UserGroup {
+public class UserGroup extends JPanel{
     
 }

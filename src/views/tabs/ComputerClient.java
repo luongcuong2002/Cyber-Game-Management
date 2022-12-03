@@ -202,7 +202,6 @@ public class ComputerClient extends JPanel {
 
         if (table != null) {
             table.setModel(tableModel);
-            table.setDefaultRenderer(Object.class, new BoardTableCellRenderer());
             if (tableSelectedRow > -1) {
                 table.setRowSelectionInterval(tableSelectedRow, tableSelectedRow);
             }
@@ -276,8 +275,13 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
                         container.setBackground(Color.red);
                     } else {
                         jLabel.setText("Đang sử dụng");
-                        jLabel.setForeground(isSelected ? colorSelectedText : Color.BLUE);
-                        container.setBackground(new Color(231, 247, 255));
+                        if(computer.getUserUsing().getUserGroupName().equals("Admin")){
+                            jLabel.setForeground(isSelected ? colorSelectedText : Color.RED);
+                            container.setBackground(Color.yellow);
+                        }else{
+                            jLabel.setForeground(isSelected ? colorSelectedText : Color.BLUE);
+                            container.setBackground(new Color(231, 247, 255));
+                        }
                     }
                 }
                 if (isSelected) {
@@ -292,12 +296,12 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
                 jLabel.setFont(newLabelFont);
                 jLabel.setForeground(isSelected ? colorSelectedText : colorUnselectedText);
 
-                Computer computer = Data.getComputerByComputerName(table.getValueAt(row, 0).toString());
-                if (computer != null) {
-                    if (computer.getUserUsing() != null && computer.getUserUsing().getUserGroupName().equals("Admin")) {
-                        container.setBackground(Color.yellow);
-                    }
-                }
+//                Computer computer = Data.getComputerByComputerName(table.getValueAt(row, 0).toString());
+//                if (computer != null) {
+//                    if (computer.getUserUsing() != null && computer.getUserUsing().getUserGroupName().equals("Admin")) {
+//                        container.setBackground(Color.yellow);
+//                    }
+//                }
 
                 container.add(jLabel);
                 return container;

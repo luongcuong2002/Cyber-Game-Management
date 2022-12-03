@@ -55,4 +55,11 @@ public class ServiceCategory {
         this.name = name;
     }
 
+    public ArrayList<ServiceItem> getListServiceItems() {
+        return listServiceItems;
+    }
+
+    public void setListServiceItems(ArrayList<ServiceItem> listServiceItems) {
+        this.listServiceItems = listServiceItems;
+    }
 }

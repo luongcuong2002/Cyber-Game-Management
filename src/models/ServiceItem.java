@@ -32,6 +32,10 @@ public class ServiceItem {
         this.category = category;
     }
     
+    public ServiceItem getCloneService(){
+        return new ServiceItem(this.name, this.price, this.unit, this.stock, this.category);
+    }
+    
     public String getName() {
         return name;
     }

@@ -25,6 +25,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 import models.Computer;
 import models.User;
+import views.dialog.ServiceRequestDialog;
 import views.tabs.ComputerClient;
 
 /**
@@ -260,6 +261,11 @@ public class ComputerClientPopUp extends JPopupMenu implements ActionListener{
                         parentView.refreshTable();
                     }
                 }
+                break;
+            }
+            case "btnService":{
+                ServiceRequestDialog requestDialog = new ServiceRequestDialog(computer);
+                requestDialog.setVisible(true);
                 break;
             }
         }

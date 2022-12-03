@@ -31,7 +31,7 @@ import models.Computer;
  *
  * @author ADMIN
  */
-public class Bill extends JDialog{
+public class BillDialog extends JDialog{
    
     private int WIDTH = 350, HEIGHT = 430;
     private JPanel container;
@@ -39,7 +39,7 @@ public class Bill extends JDialog{
     
     private Computer computer;
     
-    public Bill(Computer computer){
+    public BillDialog(Computer computer){
         this.computer = computer;
         Toolkit toolkit = this.getToolkit();
         Dimension dimension = toolkit.getScreenSize();
@@ -132,7 +132,7 @@ public class Bill extends JDialog{
         cancelButton.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e) {
-                Bill.this.setVisible(false);
+                BillDialog.this.setVisible(false);
             }
         });
         controllerButtons.add(cancelButton);

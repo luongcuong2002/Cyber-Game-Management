@@ -9,11 +9,11 @@ package models;
  *
  * @author ADMIN
  */
-public class ServiceOrdered {
+public class ServiceCanBeOrdered {
     private ServiceItem serviceItem;
     private int number;
 
-    public ServiceOrdered(ServiceItem serviceItem, int number) {
+    public ServiceCanBeOrdered(ServiceItem serviceItem, int number) {
         this.serviceItem = serviceItem;
         this.number = number;
     }

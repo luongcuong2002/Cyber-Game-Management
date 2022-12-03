@@ -149,6 +149,7 @@ public class Account extends JPanel implements ActionListener{
        
         refreshTable(Data.listUsers);
         table = new JTable(tableModel);
+        table.setRowHeight(20);
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent event) {
@@ -268,7 +269,7 @@ public class Account extends JPanel implements ActionListener{
                     }
                     for(int i = 0; i < Data.listUsers.size(); i++){
                         User user = Data.listUsers.get(i);
-                        if(user.getUserName().equals(userName.getText().trim().toUpperCase())){
+                        if(user.getUserName().equals(userName.getText().trim().toUpperCase()) || userName.getText().trim().toUpperCase().equals("ADMIN")){
                             JOptionPane.showMessageDialog(this,
                             "Tài khoản này đã tồn tại!",
                             "Warning",

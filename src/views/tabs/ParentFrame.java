@@ -13,6 +13,9 @@ public class ParentFrame extends JTabbedPane{
     private Account accountTab = new Account();
     private SystemHistory systemHistoryTab = new SystemHistory();
     private TransactionHistory transactionHistoryTab = new TransactionHistory();
+    private ComputerGroup computerGroupTab = new ComputerGroup();
+    private UserGroup userGroupTab = new UserGroup();
+    private Service serviceTab = new Service();
     
     public ParentFrame(){
         this.setBackground(Color.white);
@@ -20,6 +23,9 @@ public class ParentFrame extends JTabbedPane{
         this.addTab("Tài khoản", accountTab);
         this.addTab("Nhật ký hệ thống", systemHistoryTab);
         this.addTab("Nhật ký giao dịch", transactionHistoryTab);
+        this.addTab("Nhóm máy", computerGroupTab);
+        this.addTab("Nhóm người dùng", userGroupTab);
+        this.addTab("Dịch vụ", serviceTab);
         
         this.addChangeListener(new ChangeListener() {
             @Override
