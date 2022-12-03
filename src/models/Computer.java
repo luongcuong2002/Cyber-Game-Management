@@ -13,7 +13,10 @@ import java.awt.Frame;
 import java.awt.Label;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -41,11 +44,16 @@ public class Computer {
     private Timer timer;
     private String note = "";
     private int totalMitute = 0;
+    
+    private ArrayList<ServiceOrdered> listServicesOrdered = new ArrayList<ServiceOrdered>();
+    private Map<String, Integer> transactionTransferred = new HashMap<String, Integer>();
 
     public Computer(String computerName, ComputerGroup computerGroup) {
         this.computerName = computerName;
         this.status = "Off";
         this.computerGroup = computerGroup;
+        transactionTransferred.put("timeFee", 0);
+        transactionTransferred.put("serviceFee", 0);
     }
     
     public void turnOnComputer(User user, ComputerClient rootView){
@@ -71,7 +79,7 @@ public class Computer {
         userUsing = user;
         timeStart = new Date();
         usedBySecond = 0;
-        totalMitute = convertMoneyToTimeRemaining(user.getRemainingAmount(), price);
+        totalMitute = convertMoneyToTimeRemaining(user.getRemainingAmount());
         remainingBySecond = totalMitute;
         currentDate = new Date();
         status = "Using";
@@ -83,7 +91,7 @@ public class Computer {
                 usedBySecond++;
                 if(!user.getUserGroupName().equals("Admin")){
                     remainingBySecond = totalMitute - usedBySecond;
-                    user.setRemainingAmount(convertTimeRemainingToMoney(remainingBySecond, price));
+                    user.setRemainingAmount(convertTimeRemainingToMoney(remainingBySecond));
                     if(user.getRemainingAmount() <= 0){
                         user.setRemainingAmount(0);
                         turnOffComputer(rootView);
@@ -107,6 +115,8 @@ public class Computer {
         remainingBySecond = 0;
         currentDate = null;
         status = "Off";
+        transactionTransferred.replace("timeFee", 0);
+        transactionTransferred.replace("serviceFee", 0);
         rootView.refreshTable();
     }
     
@@ -119,15 +129,46 @@ public class Computer {
 //        if (result == JOptionPane.OK_OPTION) {
 //            turnOffComputer(rootView);
 //        }
-          Bill bill = new Bill();
+          Bill bill = new Bill(this);
           bill.setVisible(true);
     }
     
-    public int convertMoneyToTimeRemaining(int remainingAmount, int price){
+    public void transferTransaction(int timeFee, int serviceFee){
+        if(transactionTransferred.get("timeFee") == null){
+            transactionTransferred.put("timeFee", timeFee);
+        }else{
+            transactionTransferred.replace("timeFee", transactionTransferred.get("timeFee") + timeFee);
+        }
+        
+        if(transactionTransferred.get("serviceFee") == null){
+            transactionTransferred.put("serviceFee", serviceFee);
+        }else{
+            transactionTransferred.replace("serviceFee", transactionTransferred.get("serviceFee") + serviceFee);
+        }
+    }
+    
+    public int getServiceFee(){
+        int total = 0;
+        for(int i = 0; i < listServicesOrdered.size(); i++){
+            total += listServicesOrdered.get(i).getTotalFee();
+        }
+        return total;
+    }
+    
+    public int getTotalCharge(){
+        int total = 0;
+        total += convertTimeRemainingToMoney(usedBySecond);
+        total += getServiceFee();
+        total += getTransactionTransferred().getOrDefault("timeFee", 0);
+        total += getTransactionTransferred().getOrDefault("serviceFee", 0);
+        return total;
+    }
+    
+    public int convertMoneyToTimeRemaining(int remainingAmount){
         return Math.round((remainingAmount / (float) price) * 3600);
     }
     
-    public int convertTimeRemainingToMoney(int remainingBySecond, int price){
+    public int convertTimeRemainingToMoney(int remainingBySecond){
         return (int) ((remainingBySecond / 3600.0) * price);
     }
     
@@ -217,6 +258,22 @@ public class Computer {
 
     public void setTotalMitute(int totalMitute) {
         this.totalMitute = totalMitute;
+    }
+
+    public ArrayList<ServiceOrdered> getListServicesOrdered() {
+        return listServicesOrdered;
+    }
+
+    public void setListServicesOrdered(ArrayList<ServiceOrdered> listServicesOrdered) {
+        this.listServicesOrdered = listServicesOrdered;
+    }
+
+    public Map<String, Integer> getTransactionTransferred() {
+        return transactionTransferred;
+    }
+
+    public void setTransactionTransferred(Map<String, Integer> transactionTransferred) {
+        this.transactionTransferred = transactionTransferred;
     }
     
 }

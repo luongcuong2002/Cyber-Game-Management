@@ -3,6 +3,8 @@ package data;
 import java.util.ArrayList;
 import models.Computer;
 import models.ComputerGroup;
+import models.ServiceCategory;
+import models.ServiceItem;
 import models.User;
 import models.UserGroup;
 
@@ -10,6 +12,8 @@ public abstract class Data {
     public static ArrayList<ComputerGroup> computerGroups = new ArrayList<>();
     public static ArrayList<Computer> listComputers = new ArrayList<>();
     public static ArrayList<User> listUsers = new ArrayList<>();
+    public static ArrayList<ServiceCategory> listServiceCategories = new ArrayList<>();
+    public static ArrayList<ServiceCategory> listServiceItem = new ArrayList<>();
     
     public static void getData(){
         
@@ -18,6 +22,7 @@ public abstract class Data {
         setUpComputerGroups();
         setUpListComputers();
         setUpListUsers();
+        setUpListServiceCategories();
     }
     
     public static void saveData(){
@@ -64,6 +69,35 @@ public abstract class Data {
         listUsers.add(new User("User5", "1", "Member"));
         listUsers.add(new User("User6", "1", "Member"));
         listUsers.add(new User("User7", "1", "Member"));
+    }
+    
+    private static void setUpListServiceCategories(){
+        listServiceCategories.add(new ServiceCategory("ĐỒ VẶT"));
+        listServiceCategories.get(0).addServiceItem(new ServiceItem("BIM THƯỜNG", 5000, "VNĐ", "ĐỒ VẶT"));
+        listServiceCategories.get(0).addServiceItem(new ServiceItem("BIM POCA", 7000, "VNĐ", "ĐỒ VẶT"));
+        listServiceCategories.get(0).addServiceItem(new ServiceItem("BIM MIX", 12000, "VNĐ", "ĐỒ VẶT"));
+        listServiceCategories.get(0).addServiceItem(new ServiceItem("ĐẬU PHỘNG", 15000, "VNĐ", "ĐỒ VẶT"));
+        
+        listServiceCategories.add(new ServiceCategory("MÌ TÔM"));
+        listServiceCategories.get(1).addServiceItem(new ServiceItem("1 MÌ 1 TRỨNG 1 XÚC XÍCH", 30000, "VNĐ", "MÌ TÔM"));
+        listServiceCategories.get(1).addServiceItem(new ServiceItem("2 MÌ 1 TRỨNG 1 XÚC XÍCH", 35000, "VNĐ", "MÌ TÔM"));
+        listServiceCategories.get(1).addServiceItem(new ServiceItem("XÚC XÍCH RÁN", 10000, "VNĐ", "MÌ TÔM"));
+        listServiceCategories.get(1).addServiceItem(new ServiceItem("MÌ TRỨNG XÚC XÍCH RAU", 30000, "VNĐ", "MÌ TÔM"));
+        
+        listServiceCategories.add(new ServiceCategory("NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("BÒ HÚC", 15000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC C2", 10000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC DỪA", 10000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC STING ĐỎ", 10000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC STING ĐEN", 10000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC STING VÀNG", 10000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC LỌC", 5000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC TRÀ ĐÀO", 10000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC YẾN", 10000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC Ô LONG", 10000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC COCA", 10000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC PEPSI", 10000, "VNĐ", "NƯỚC"));
+        listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC 7 UP", 10000, "VNĐ", "NƯỚC"));
     }
     
     public static User getUserByUserName(String userName){

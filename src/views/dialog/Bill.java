@@ -15,6 +15,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.NumberFormat;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -24,6 +25,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
+import models.Computer;
 
 /**
  *
@@ -35,13 +37,16 @@ public class Bill extends JDialog{
     private JPanel container;
     private int fontSize = 12;
     
-    public Bill(){
+    private Computer computer;
+    
+    public Bill(Computer computer){
+        this.computer = computer;
         Toolkit toolkit = this.getToolkit();
         Dimension dimension = toolkit.getScreenSize();
         this.setBounds(dimension.width / 2 - WIDTH / 2, dimension.height / 2 - HEIGHT / 2, WIDTH, HEIGHT);
         this.setModal(true);
         this.setTitle("Kết thúc giao dịch");
-        //this.setResizable(false);
+        this.setResizable(false);
         this.setLayout(new BorderLayout());
         container = new JPanel();
         container.setLayout(new BoxLayout(container, BoxLayout.Y_AXIS));
@@ -50,42 +55,53 @@ public class Bill extends JDialog{
         
         JPanel userNamePanel = new JPanel(new GridLayout(1,2,0,0));
         userNamePanel.add(renderJLabelWithFontSize("Tên người sử dụng: ", fontSize));
-        userNamePanel.add(renderDisableInputWithFontSize("MAY10", fontSize));
+        userNamePanel.add(renderDisableInputWithFontSize(computer.getComputerName(), fontSize));
         
         JPanel currentTransaction = new JPanel();
         Border border = BorderFactory.createTitledBorder("Giao dịch hiện tại");
         currentTransaction.setBorder(border);
         currentTransaction.setLayout(new GridLayout(4,2,5,5));
-        currentTransaction.add(renderJLabelWithFontSize("Thời gian đã sử dụng: ", fontSize));
-        currentTransaction.add(renderDisableInputWithFontSize("1 Giờ 0 Phút", fontSize));
-        currentTransaction.add(renderJLabelWithFontSize("Phí thời gian: ", fontSize));
-        currentTransaction.add(renderDisableInputWithFontSize("11,100", fontSize));
-        currentTransaction.add(renderJLabelWithFontSize("Dịch vụ: ", fontSize));
-        currentTransaction.add(renderDisableInputWithFontSize("18,000", fontSize));
-        currentTransaction.add(renderJLabelWithFontSize("Làm tròn: ", fontSize));
-        currentTransaction.add(renderDisableInputWithFontSize("29,000", fontSize));
         
+        currentTransaction.add(renderJLabelWithFontSize("Thời gian đã sử dụng: ", fontSize));
+        currentTransaction.add(renderDisableInputWithFontSize(formatSecondsToTimeString(computer.getUsedBySecond()), fontSize));
+        
+        currentTransaction.add(renderJLabelWithFontSize("Phí thời gian: ", fontSize));
+        int timeFee = computer.convertTimeRemainingToMoney(computer.getUsedBySecond());
+        currentTransaction.add(renderDisableInputWithFontSize(NumberFormat.getNumberInstance().format(timeFee), fontSize));
+        
+        currentTransaction.add(renderJLabelWithFontSize("Dịch vụ: ", fontSize));
+        String serviceFee = NumberFormat.getNumberInstance().format(computer.getServiceFee());
+        currentTransaction.add(renderDisableInputWithFontSize(serviceFee, fontSize));
+        
+        currentTransaction.add(renderJLabelWithFontSize("Làm tròn: ", fontSize));
+        int rounding = Math.round((computer.getServiceFee() + timeFee) / 1000.0f) * 1000;
+        currentTransaction.add(renderDisableInputWithFontSize(NumberFormat.getNumberInstance().format(rounding), fontSize));
         
         JPanel transferredTransaction = new JPanel();
         Border border1 = BorderFactory.createTitledBorder("Đã chuyển");
         transferredTransaction.setBorder(border1);
         transferredTransaction.setLayout(new GridLayout(2,2,5,5));
+        
         transferredTransaction.add(renderJLabelWithFontSize("Phí thời gian: ", fontSize));
-        transferredTransaction.add(renderDisableInputWithFontSize("11,100", fontSize));
+        int timeFeeTransferred = computer.getTransactionTransferred().getOrDefault("timeFee", 0);
+        transferredTransaction.add(renderDisableInputWithFontSize(NumberFormat.getNumberInstance().format(timeFeeTransferred), fontSize));
+        
         transferredTransaction.add(renderJLabelWithFontSize("Dịch vụ: ", fontSize));
-        transferredTransaction.add(renderDisableInputWithFontSize("18,000", fontSize));
+        int serviceFeeTransferred = computer.getTransactionTransferred().getOrDefault("serviceFee", 0);
+        transferredTransaction.add(renderDisableInputWithFontSize(NumberFormat.getNumberInstance().format(serviceFeeTransferred), fontSize));
         
         JPanel totalCharge = new JPanel();
         Border border2 = BorderFactory.createTitledBorder("Tổng cộng");
         totalCharge.setBorder(border2);
         totalCharge.setLayout(new GridLayout(2,2,5,5));
         totalCharge.add(renderJLabelWithFontSize("Tiền: ", fontSize));
-        totalCharge.add(renderDisableInputWithFontSize("11,100", fontSize));
+        totalCharge.add(renderDisableInputWithFontSize(NumberFormat.getNumberInstance().format(computer.getTotalCharge()), fontSize));
         totalCharge.add(renderJLabelWithFontSize("Thu thập: ", fontSize));
-        totalCharge.add(renderDisableInputWithFontSize("18,000", fontSize));
+        int roundingCharge = Math.round(computer.getTotalCharge() / 1000.0f) * 1000;
+        totalCharge.add(renderDisableInputWithFontSize(NumberFormat.getNumberInstance().format(roundingCharge), fontSize));
         
         JPanel totalPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        JLabel totalLabel = new JLabel("29,000");
+        JLabel totalLabel = new JLabel(NumberFormat.getNumberInstance().format(roundingCharge));
         totalLabel.setFont(new Font(totalLabel.getFont().getName(), Font.BOLD, fontSize * 2));
         totalPanel.add(totalLabel);
         
@@ -129,7 +145,7 @@ public class Bill extends JDialog{
         container.add(totalPanel);
         container.add(controllerButtons);
     }
-    
+
     private JLabel renderJLabelWithFontSize(String title, int fontSize){
         JLabel label2 = new JLabel(title);
         label2.setFont(label2.getFont().deriveFont(fontSize));
@@ -141,5 +157,9 @@ public class Bill extends JDialog{
         edt3.setFont(edt3.getFont().deriveFont(fontSize));
         edt3.setEditable(false);
         return edt3;
+    }
+    
+    private String formatSecondsToTimeString(int seconds){
+        return (seconds / 3600) + " giờ " + (seconds % 3600) / 60 + " phút";
     }
 }

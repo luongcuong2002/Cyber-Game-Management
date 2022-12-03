@@ -62,7 +62,7 @@ public class User {
             User user = Data.listComputers.get(i).getUserUsing();
             if(user != null && user.getUserName().equals(this.getUserName())){
                 Data.listComputers.get(i).setTotalMitute(
-                        Data.listComputers.get(i).convertMoneyToTimeRemaining(remainingAmount, Data.listComputers.get(i).getPrice()));
+                        Data.listComputers.get(i).convertMoneyToTimeRemaining(remainingAmount));
             }
         }
     }
