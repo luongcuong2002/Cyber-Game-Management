@@ -50,6 +50,7 @@ import models.ServiceCategory;
 import models.ServiceItem;
 import models.User;
 import screens.MainFrame;
+import views.dialog.ServiceCategoryDialog;
 import views.popup.AccountPopup;
 import views.popup.ComputerClientPopUp;
 
@@ -57,7 +58,7 @@ public class Service extends JPanel implements ActionListener{
     
     private JTable table;
     private JPanel controller, tableWrapper;
-    private JButton btnAdd, btnEdit, btnRemove;
+    private JButton btnAdd, btnEdit, btnRemove, btnAddCategory;
     private AbstractTableModel tableModel;
     
     private int tableSelectedRow = -1;
@@ -111,9 +112,27 @@ public class Service extends JPanel implements ActionListener{
         btnRemove.setFocusPainted(false);
         btnRemove.setContentAreaFilled(false);
         
+        btnAddCategory = new JButton("Loại dịch vụ");
+        btnAddCategory.setActionCommand("btnAddCategory");
+        btnAddCategory.addActionListener(this);
+        btnAddCategory.setPreferredSize(new Dimension(buttonSize * 3,buttonSize));
+        btnAddCategory.setBackground(Color.blue);
+        btnAddCategory.setBorder(border);
+        btnAddCategory.setFocusPainted(false);
+        btnAddCategory.setContentAreaFilled(false);
+        
         controller.add(btnAdd);
         controller.add(btnEdit);
         controller.add(btnRemove);
+        controller.add(new JPanel(){
+            @Override
+            public void setPreferredSize(Dimension preferredSize) {
+                new Dimension(buttonSize, buttonSize);
+            }
+        });
+        controller.add(btnAddCategory);
+
+       
         controller.add(new JPanel(){ // adding space
             @Override
             public Dimension preferredSize() {
@@ -212,105 +231,20 @@ public class Service extends JPanel implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         switch(e.getActionCommand()){
             case "btnAdd": {
-//                JTextField userName = new JTextField();
-//                JPasswordField password = new JPasswordField();
-//                final JComponent[] inputs = new JComponent[] {
-//                    new JLabel("Nhập tên tài khoản"), userName,
-//                    new JLabel("Nhập mật khẩu"), password
-//                };  
-//                int result = JOptionPane.showConfirmDialog(null, inputs, "Tạo tài khoản hội viên", JOptionPane.PLAIN_MESSAGE);
-//                if (result == JOptionPane.OK_OPTION) {
-//                    if(userName.getText().trim().isEmpty()){
-//                        JOptionPane.showMessageDialog(this,
-//                        "Tên tài khoản không được để trống!",
-//                        "Warning",
-//                        JOptionPane.WARNING_MESSAGE);
-//                        return;
-//                    }
-//                    if(String.valueOf(password.getPassword()).trim().isEmpty()){
-//                        JOptionPane.showMessageDialog(this,
-//                        "Mật khẩu không được để trống!",
-//                        "Warning",
-//                        JOptionPane.WARNING_MESSAGE);
-//                        return;
-//                    }
-//                    for(int i = 0; i < Data.listUsers.size(); i++){
-//                        User user = Data.listUsers.get(i);
-//                        if(user.getUserName().equals(userName.getText().trim().toUpperCase())){
-//                            JOptionPane.showMessageDialog(this,
-//                            "Tài khoản này đã tồn tại!",
-//                            "Warning",
-//                            JOptionPane.WARNING_MESSAGE);
-//                            return;
-//                        }
-//                    }
-//                    Data.listUsers.add(new User(userName.getText().trim(), String.valueOf(password.getPassword()).trim(), "Member"));
-//                    refreshTable();
-//                }
                 break;
             }
             case "btnEdit": {
                 if(tableSelectedRow > -1){
-//                    String userName = (String) table.getValueAt(tableSelectedRow, 0);
-//                    for(int i = 0; i < Data.listUsers.size(); i++){
-//                        if(userName.equals(Data.listUsers.get(i).getUserName())){
-//                            JTextField edtUserName = new JTextField(userName);
-//                            edtUserName.setEnabled(false);
-//                            JPasswordField edtPassword = new JPasswordField();
-//                            final JComponent[] inputs = new JComponent[] {
-//                                new JLabel("Nhập tên tài khoản"), edtUserName,
-//                                new JLabel("Nhập mật khẩu"), edtPassword
-//                            };  
-//                            int result = JOptionPane.showConfirmDialog(null, inputs, "Tạo tài khoản hội viên", JOptionPane.PLAIN_MESSAGE);
-//                            if (result == JOptionPane.OK_OPTION) {
-//                                if(edtUserName.getText().trim().isEmpty()){
-//                                    JOptionPane.showMessageDialog(this,
-//                                    "Tên tài khoản không được để trống!",
-//                                    "Warning",
-//                                    JOptionPane.WARNING_MESSAGE);
-//                                    return;
-//                                }
-//                                if(String.valueOf(edtPassword.getPassword()).isEmpty()){
-//                                    JOptionPane.showMessageDialog(this,
-//                                    "Mật khẩu không được để trống!",
-//                                    "Warning",
-//                                    JOptionPane.WARNING_MESSAGE);
-//                                    return;
-//                                }
-//                                for(i = 0; i < Data.listUsers.size(); i++){
-//                                    User user = Data.listUsers.get(i);
-//                                    if(user.getUserName().equals(edtUserName.getText().trim().toUpperCase())){
-//                                        user.setPassword(String.valueOf(edtPassword.getPassword()));
-//                                        return;
-//                                    }
-//                                }
-//                                refreshTable();
-//                            }
-//                        }
-//                    }
                 }
                 break;
             }
             case "btnRemove": {
                 if(tableSelectedRow > -1){
-//                    String userName = (String) table.getValueAt(tableSelectedRow, 0);
-//                    for(int i = 0; i < Data.listUsers.size(); i++){
-//                        User user = Data.listUsers.get(i);
-//                        if(user.getUserName().equals(userName)){
-//                            if(user.getRemainingAmount() > 0){
-//                                JOptionPane.showMessageDialog(this,
-//                                "Chỉ được xóa những tài khoản đã hết tiền!",
-//                                "Warning",
-//                                JOptionPane.WARNING_MESSAGE);
-//                                return;
-//                            }
-//                            Data.listUsers.remove(user);
-//                            refreshTable();
-//                            return;
-//                        }
-//                    }
-//                    refreshTable();
                 }
+                break;
+            }
+            case "btnAddCategory": {
+                new ServiceCategoryDialog().setVisible(true);
                 break;
             }
         }

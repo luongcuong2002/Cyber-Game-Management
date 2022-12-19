@@ -275,10 +275,10 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
                         container.setBackground(Color.red);
                     } else {
                         jLabel.setText("Đang sử dụng");
-                        if(computer.getUserUsing().getUserGroupName().equals("Admin")){
+                        if (computer.getUserUsing().getUserGroupName().equals("Admin")) {
                             jLabel.setForeground(isSelected ? colorSelectedText : Color.RED);
                             container.setBackground(Color.yellow);
-                        }else{
+                        } else {
                             jLabel.setForeground(isSelected ? colorSelectedText : Color.BLUE);
                             container.setBackground(new Color(231, 247, 255));
                         }
@@ -296,12 +296,22 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
                 jLabel.setFont(newLabelFont);
                 jLabel.setForeground(isSelected ? colorSelectedText : colorUnselectedText);
 
-//                Computer computer = Data.getComputerByComputerName(table.getValueAt(row, 0).toString());
-//                if (computer != null) {
-//                    if (computer.getUserUsing() != null && computer.getUserUsing().getUserGroupName().equals("Admin")) {
-//                        container.setBackground(Color.yellow);
-//                    }
-//                }
+                if (!isSelected) {
+                    Computer computer = Data.getComputerByComputerName(table.getValueAt(row, 0).toString());
+                    if (computer != null) {
+                        if (computer.getUserUsing() != null) {
+                            if (computer.getListTransactionsTransfer().size() > 0) {
+                                container.setBackground(Color.orange);
+                            }
+                            for (int i = 0; i < computer.getListServicesOrdered().size(); i++) {
+                                if (computer.getListServicesOrdered().get(i).isIsProvided()) {
+                                    container.setBackground(new Color(8, 173, 173));
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                }
 
                 container.add(jLabel);
                 return container;

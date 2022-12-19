@@ -5,6 +5,8 @@
  */
 package models;
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
@@ -14,7 +16,10 @@ import javax.swing.JOptionPane;
  */
 public class ServiceCategory {
 
+    @Expose(serialize = true, deserialize = true)
     private String name;
+    
+    @Expose(serialize = true, deserialize = true)
     private ArrayList<ServiceItem> listServiceItems = new ArrayList<>();
 
     public ServiceCategory(String name) {

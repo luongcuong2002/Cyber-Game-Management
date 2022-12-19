@@ -5,24 +5,12 @@
  */
 package models;
 
-import data.Data;
-import java.awt.Button;
-import java.awt.Dialog;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.Label;
+import com.google.gson.annotations.Expose;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPasswordField;
-import javax.swing.JTable;
-import javax.swing.JTextField;
 import javax.swing.Timer;
 import views.dialog.BillDialog;
 import views.tabs.ComputerClient;
@@ -32,47 +20,72 @@ import views.tabs.ComputerClient;
  * @author ADMIN
  */
 public class Computer {
+
+    @Expose(serialize = true, deserialize = true)
     private String computerName;
-    private String status;
-    private User userUsing;
-    private Date timeStart;
-    private int usedBySecond;
-    private int remainingBySecond;
-    private int price = 0;
-    private Date currentDate;
-    private ComputerGroup computerGroup;
-    private Timer timer;
-    private String note = "";
-    private int totalMitute = 0;
     
+    @Expose(serialize = true, deserialize = true)
+    private ComputerGroup computerGroup;
+    
+    @Expose(serialize = false, deserialize = false)
+    private String status;
+    
+    @Expose(serialize = false, deserialize = false)
+    private User userUsing;
+    
+    @Expose(serialize = false, deserialize = false)
+    private Date timeStart;
+    
+    @Expose(serialize = false, deserialize = false)
+    private int usedBySecond;
+    
+    @Expose(serialize = false, deserialize = false)
+    private int remainingBySecond;
+    
+    @Expose(serialize = false, deserialize = false)
+    private int price = 0;
+    
+    @Expose(serialize = false, deserialize = false)
+    private Date currentDate;
+    
+    @Expose(serialize = false, deserialize = false)
+    private Timer timer;
+    
+    @Expose(serialize = false, deserialize = false)
+    private String note = "";
+    
+    @Expose(serialize = false, deserialize = false)
+    private int totalMitute = 0;
+
+    @Expose(serialize = false, deserialize = false)
     private ArrayList<ServiceCanBeOrdered> listServicesOrdered = new ArrayList<ServiceCanBeOrdered>();
-    private Map<String, Integer> transactionTransferred = new HashMap<String, Integer>();
+    
+    @Expose(serialize = false, deserialize = false)
+    private ArrayList<TransactionTransfer> listTransactionsTransfer = new ArrayList<TransactionTransfer>();
 
     public Computer(String computerName, ComputerGroup computerGroup) {
         this.computerName = computerName;
         this.status = "Off";
         this.computerGroup = computerGroup;
-        transactionTransferred.put("timeFee", 0);
-        transactionTransferred.put("serviceFee", 0);
     }
-    
-    public void turnOnComputer(User user, ComputerClient rootView){
-        if(timer != null){
+
+    public void turnOnComputer(User user, ComputerClient rootView) {
+        if (timer != null) {
             timer.stop();
             timer = null;
         }
-        if(!user.getUserGroupName().equals("Admin")){
-            for(int i = 0; i < computerGroup.getPriceForEachUserGroups().size(); i++){
-                if(computerGroup.getPriceForEachUserGroups().get(i).getUserGroupName().equals(user.getUserGroupName())){
+        if (!user.getUserGroupName().equals("Admin")) {
+            for (int i = 0; i < computerGroup.getPriceForEachUserGroups().size(); i++) {
+                if (computerGroup.getPriceForEachUserGroups().get(i).getUserGroupName().equals(user.getUserGroupName())) {
                     price = computerGroup.getPriceForEachUserGroups().get(i).getPrice();
                     break;
                 }
             }
-            if(price <= 0){
+            if (price <= 0) {
                 System.out.println("Không tìm thấy giá dành cho người dùng!");
                 return;
             }
-            if(user.getUserGroupName().equals("Guest") && !user.isIsPrepaid()){
+            if (user.getUserGroupName().equals("Guest") && !user.isIsPrepaid()) {
                 user.setRemainingAmount(1000 * price); // postpaid user, remaining start with 1000h
             }
         }
@@ -83,16 +96,16 @@ public class Computer {
         remainingBySecond = totalMitute;
         currentDate = new Date();
         status = "Using";
-        
+
         rootView.refreshTable();
         timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 usedBySecond++;
-                if(!user.getUserGroupName().equals("Admin")){
+                if (!user.getUserGroupName().equals("Admin")) {
                     remainingBySecond = totalMitute - usedBySecond;
                     user.setRemainingAmount(convertTimeRemainingToMoney(remainingBySecond));
-                    if(user.getRemainingAmount() <= 0){
+                    if (user.getRemainingAmount() <= 0) {
                         user.setRemainingAmount(0);
                         turnOffComputer(rootView);
                     }
@@ -102,9 +115,9 @@ public class Computer {
         });
         timer.start();
     }
-    
-    public void turnOffComputer(ComputerClient rootView){
-        if(timer != null){
+
+    public void turnOffComputer(ComputerClient rootView) {
+        if (timer != null) {
             timer.stop();
             timer = null;
         }
@@ -115,63 +128,101 @@ public class Computer {
         remainingBySecond = 0;
         currentDate = null;
         status = "Off";
-        transactionTransferred.replace("timeFee", 0);
-        transactionTransferred.replace("serviceFee", 0);
+        listTransactionsTransfer.clear();
+        listServicesOrdered.clear();
         rootView.refreshTable();
     }
-    
-    public void charge(ComputerClient rootView){
-//        int totalAmount = convertTimeRemainingToMoney(usedBySecond, price);
-//        final JComponent[] inputs = new JComponent[] {
-//            new JLabel("Số tiền phải thanh toán"), new JLabel(totalAmount + ""),
-//        };
-//        int result = JOptionPane.showConfirmDialog(null, inputs, "Thanh toán " + this.computerName, JOptionPane.PLAIN_MESSAGE);
-//        if (result == JOptionPane.OK_OPTION) {
-//            turnOffComputer(rootView);
-//        }
-          BillDialog bill = new BillDialog(this);
-          bill.setVisible(true);
+
+    public void charge(ComputerClient rootView) {
+        BillDialog bill = new BillDialog(rootView, this);
+        bill.setVisible(true);
+    }
+
+    public void addTransactionTransfer(String fromUserName, int timeFee, int serviceFee) {
+        listTransactionsTransfer.add(new TransactionTransfer(fromUserName, timeFee, serviceFee));
+    }
+
+    public String getServiceFeeDescriptionForTransferTransaction() {
+        int totalAmount = 0;
+        String usersName = "";
+        for (int i = 0; i < listTransactionsTransfer.size(); i++) {
+            totalAmount += listTransactionsTransfer.get(i).getServiceFee();
+            if (i != 0) {
+                usersName += ", ";
+            }
+            usersName += ("Máy: " + listTransactionsTransfer.get(i).getFromUser());
+        }
+        return this.getUserUsing().getUserGroupName() + " " + this.getUserUsing().getUserName()
+                + " đã trả " + NumberFormat.getNumberInstance().format(totalAmount) + " đồng"
+                + " phí dịch vụ được chuyển đến từ " + "[ " + usersName + " ]";
+    }
+
+    public String getTimeFeeDescriptionForTransferTransaction() {
+        int totalAmount = 0;
+        String usersName = "";
+        for (int i = 0; i < listTransactionsTransfer.size(); i++) {
+            totalAmount += listTransactionsTransfer.get(i).getTimeFee();
+            if (i != 0) {
+                usersName += ", ";
+            }
+            usersName += ("Máy: " + listTransactionsTransfer.get(i).getFromUser());
+        }
+        return this.getUserUsing().getUserGroupName() + " " + this.getUserUsing().getUserName()
+                + " đã trả " + NumberFormat.getNumberInstance().format(totalAmount) + " đồng"
+                + " phí thời gian được chuyển đến từ " + "[ " + usersName + " ]";
     }
     
-    public void transferTransaction(int timeFee, int serviceFee){
-        if(transactionTransferred.get("timeFee") == null){
-            transactionTransferred.put("timeFee", timeFee);
-        }else{
-            transactionTransferred.replace("timeFee", transactionTransferred.get("timeFee") + timeFee);
-        }
-        
-        if(transactionTransferred.get("serviceFee") == null){
-            transactionTransferred.put("serviceFee", serviceFee);
-        }else{
-            transactionTransferred.replace("serviceFee", transactionTransferred.get("serviceFee") + serviceFee);
-        }
-    }
-    
-    public int getServiceFee(){
+    public int getServiceFeeTransferred() {
         int total = 0;
-        for(int i = 0; i < listServicesOrdered.size(); i++){
+        for (int i = 0; i < listTransactionsTransfer.size(); i++) {
+            total += listTransactionsTransfer.get(i).getServiceFee();
+        }
+        return total;
+    }
+
+    public int getTimeFeeTransferred() {
+        int total = 0;
+        for (int i = 0; i < listTransactionsTransfer.size(); i++) {
+            total += listTransactionsTransfer.get(i).getTimeFee();
+        }
+        return total;
+    }
+
+    public int getServiceFee() {
+        int total = 0;
+        for (int i = 0; i < listServicesOrdered.size(); i++) {
             total += listServicesOrdered.get(i).getTotalFee();
         }
         return total;
     }
     
-    public int getTotalCharge(){
+    public int getTimeFee() {
+        return Math.round((convertTimeRemainingToMoney(usedBySecond)) / 1000.0f) * 1000;
+    }
+
+    public int getTotalCharge() {
         int total = 0;
         total += convertTimeRemainingToMoney(usedBySecond);
         total += getServiceFee();
-        total += getTransactionTransferred().getOrDefault("timeFee", 0);
-        total += getTransactionTransferred().getOrDefault("serviceFee", 0);
+        for (int i = 0; i < listTransactionsTransfer.size(); i++) {
+            total += listTransactionsTransfer.get(i).getTimeFee();
+            total += listTransactionsTransfer.get(i).getServiceFee();
+        }
         return total;
     }
-    
-    public int convertMoneyToTimeRemaining(int remainingAmount){
+
+    public int convertMoneyToTimeRemaining(int remainingAmount) {
         return Math.round((remainingAmount / (float) price) * 3600);
     }
-    
-    public int convertTimeRemainingToMoney(int remainingBySecond){
-        return (int) ((remainingBySecond / 3600.0) * price);
+
+    public int convertTimeRemainingToMoney(int remainingBySecond) {
+        int total = (int) ((remainingBySecond / 3600.0) * price);
+        if(total < 1000){
+            return 1000;
+        }
+        return total;
     }
-    
+
     public String getComputerName() {
         return computerName;
     }
@@ -268,12 +319,12 @@ public class Computer {
         this.listServicesOrdered = listServicesOrdered;
     }
 
-    public Map<String, Integer> getTransactionTransferred() {
-        return transactionTransferred;
+    public ArrayList<TransactionTransfer> getListTransactionsTransfer() {
+        return listTransactionsTransfer;
     }
 
-    public void setTransactionTransferred(Map<String, Integer> transactionTransferred) {
-        this.transactionTransferred = transactionTransferred;
+    public void setListTransactionsTransfer(ArrayList<TransactionTransfer> listTransactionsTransfer) {
+        this.listTransactionsTransfer = listTransactionsTransfer;
     }
-    
+
 }

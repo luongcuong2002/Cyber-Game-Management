@@ -161,6 +161,9 @@ public class ComputerClientPopUp extends JPopupMenu implements ActionListener{
                 };
                 int result = JOptionPane.showConfirmDialog(null, inputs, "Đăng nhập trả tiền trước", JOptionPane.PLAIN_MESSAGE);
                 if (result == JOptionPane.OK_OPTION) {
+                    if(amountOfMoney.getText().trim().isEmpty()){
+                        return;
+                    }
                     computer.turnOnComputer(new User(computer.getComputerName(), Integer.parseInt(amountOfMoney.getText().trim()),"Guest", true ), parentView);
                 }
                 break;

@@ -21,6 +21,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
 import models.Computer;
 import models.PlaceholderTextField;
+import models.TransactionHistoryItem;
 import models.User;
 import screens.MainFrame;
 import views.popup.AccountPopup;
@@ -161,9 +163,9 @@ public class TransactionHistory extends JPanel implements ActionListener{
     
     private void setupTable(){
        
-        refreshTable(Data.listUsers);
+        refreshTable();
         table = new JTable(tableModel);
-        
+        table.setRowHeight(20);
         table.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent event) {
@@ -208,21 +210,46 @@ public class TransactionHistory extends JPanel implements ActionListener{
         });
     }
     
-    public void refreshTable(ArrayList<User> list){
+    public void refreshTable(){
         Vector<String> columnNames = new Vector<>();
         columnNames.add("Tên người sử dụng");
-        columnNames.add("Tiền còn lại");
-        columnNames.add("Nhóm người dùng");
-        columnNames.add("Tình trạng");
+        columnNames.add("Ngày bắt đầu");
+        columnNames.add("Giờ bắt đầu");
+        columnNames.add("Ngày");
+        columnNames.add("Thời gian");
+        columnNames.add("Tiền");
+        columnNames.add("Thời gian đã sử dụng");
+        columnNames.add("Ghi chú");
+        
+        SimpleDateFormat formater;
         
         Vector<Vector<String>> data = new Vector<>();
-        for(int i = 0; i < list.size();i++){
+        for(int i = Data.listTransactionHistoryItems.size() - 1; i >= 0;i--){
             Vector<String> row = new Vector<>();
-            User user = list.get(i);
-            row.add(user.getUserName());
-            row.add(user.getRemainingAmountToString());
-            row.add(user.getUserGroupName());
-            row.add("Cho phép");
+            TransactionHistoryItem item = Data.listTransactionHistoryItems.get(i);
+            row.add(item.getUserName());
+            if(item.getTimeStart() != null){
+                formater = new SimpleDateFormat("dd-MM-yyyy");
+                row.add(formater.format(item.getTimeStart()));
+                formater = new SimpleDateFormat("HH:mm:ss");
+                row.add(formater.format(item.getTimeStart()));
+            }else{
+                row.add("");
+                row.add("");
+            }
+            formater = new SimpleDateFormat("dd-MM-yyyy");
+            row.add(formater.format(item.getTimeMadeTransaction()));
+            formater = new SimpleDateFormat("HH:mm:ss");
+            row.add(formater.format(item.getTimeMadeTransaction()));
+            row.add(NumberFormat.getNumberInstance().format(item.getAmount()));
+            String timeUsed;
+            if(item.getTimeUsedByMinute() / 60 == 0){
+                timeUsed = String.valueOf(item.getTimeUsedByMinute()) + "Phút";
+            }else{
+                timeUsed = item.getTimeUsedByMinute() / 60 + "Giờ " + (item.getTimeUsedByMinute() % 60) + "Phút";
+            }
+            row.add(timeUsed);
+            row.add(item.getDescription());
             data.add(row);
         }
         
@@ -257,125 +284,125 @@ public class TransactionHistory extends JPanel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        switch(e.getActionCommand()){
-            case "btnAdd": {
-                JTextField userName = new JTextField();
-                JPasswordField password = new JPasswordField();
-                final JComponent[] inputs = new JComponent[] {
-                    new JLabel("Nhập tên tài khoản"), userName,
-                    new JLabel("Nhập mật khẩu"), password
-                };  
-                int result = JOptionPane.showConfirmDialog(null, inputs, "Tạo tài khoản hội viên", JOptionPane.PLAIN_MESSAGE);
-                if (result == JOptionPane.OK_OPTION) {
-                    if(userName.getText().trim().isEmpty()){
-                        JOptionPane.showMessageDialog(this,
-                        "Tên tài khoản không được để trống!",
-                        "Warning",
-                        JOptionPane.WARNING_MESSAGE);
-                        return;
-                    }
-                    if(String.valueOf(password.getPassword()).trim().isEmpty()){
-                        JOptionPane.showMessageDialog(this,
-                        "Mật khẩu không được để trống!",
-                        "Warning",
-                        JOptionPane.WARNING_MESSAGE);
-                        return;
-                    }
-                    for(int i = 0; i < Data.listUsers.size(); i++){
-                        User user = Data.listUsers.get(i);
-                        if(user.getUserName().equals(userName.getText().trim().toUpperCase())){
-                            JOptionPane.showMessageDialog(this,
-                            "Tài khoản này đã tồn tại!",
-                            "Warning",
-                            JOptionPane.WARNING_MESSAGE);
-                            return;
-                        }
-                    }
-                    Data.listUsers.add(new User(userName.getText().trim(), String.valueOf(password.getPassword()).trim(), "Member"));
-                    refreshTable(Data.listUsers);
-                }
-                break;
-            }
-            case "btnEdit": {
-                if(tableSelectedRow > -1){
-                    String userName = (String) table.getValueAt(tableSelectedRow, 0);
-                    for(int i = 0; i < Data.listUsers.size(); i++){
-                        if(userName.equals(Data.listUsers.get(i).getUserName())){
-                            JTextField edtUserName = new JTextField(userName);
-                            edtUserName.setEnabled(false);
-                            JPasswordField edtPassword = new JPasswordField();
-                            final JComponent[] inputs = new JComponent[] {
-                                new JLabel("Nhập tên tài khoản"), edtUserName,
-                                new JLabel("Nhập mật khẩu"), edtPassword
-                            };  
-                            int result = JOptionPane.showConfirmDialog(null, inputs, "Tạo tài khoản hội viên", JOptionPane.PLAIN_MESSAGE);
-                            if (result == JOptionPane.OK_OPTION) {
-                                if(edtUserName.getText().trim().isEmpty()){
-                                    JOptionPane.showMessageDialog(this,
-                                    "Tên tài khoản không được để trống!",
-                                    "Warning",
-                                    JOptionPane.WARNING_MESSAGE);
-                                    return;
-                                }
-                                if(String.valueOf(edtPassword.getPassword()).isEmpty()){
-                                    JOptionPane.showMessageDialog(this,
-                                    "Mật khẩu không được để trống!",
-                                    "Warning",
-                                    JOptionPane.WARNING_MESSAGE);
-                                    return;
-                                }
-                                for(i = 0; i < Data.listUsers.size(); i++){
-                                    User user = Data.listUsers.get(i);
-                                    if(user.getUserName().equals(edtUserName.getText().trim().toUpperCase())){
-                                        user.setPassword(String.valueOf(edtPassword.getPassword()));
-                                        return;
-                                    }
-                                }
-                                refreshTable(Data.listUsers);
-                            }
-                        }
-                    }
-                }
-                break;
-            }
-            case "btnRemove": {
-                if(tableSelectedRow > -1){
-                    String userName = (String) table.getValueAt(tableSelectedRow, 0);
-                    for(int i = 0; i < Data.listUsers.size(); i++){
-                        User user = Data.listUsers.get(i);
-                        if(user.getUserName().equals(userName)){
-                            if(user.getRemainingAmount() > 0){
-                                JOptionPane.showMessageDialog(this,
-                                "Chỉ được xóa những tài khoản đã hết tiền!",
-                                "Warning",
-                                JOptionPane.WARNING_MESSAGE);
-                                return;
-                            }
-                            Data.listUsers.remove(user);
-                            refreshTable(Data.listUsers);
-                            return;
-                        }
-                    }
-                    refreshTable(Data.listUsers);
-                }
-                break;
-            }
-            case "btnRefresh":{
-                refreshTable(Data.listUsers);
-                break;
-            }
-            case "btnSearch": {
-                String text = edtInputToSearch.getText().trim().toUpperCase();
-                edtInputToSearch.setText("");
-                ArrayList<User> list = new ArrayList<>();
-                for(int i = 0; i < Data.listUsers.size(); i++){
-                    if(Data.listUsers.get(i).getUserName().startsWith(text)){
-                        list.add(Data.listUsers.get(i));
-                    }
-                }
-                refreshTable(list);
-                break;
-            }
-        }
+//        switch(e.getActionCommand()){
+//            case "btnAdd": {
+//                JTextField userName = new JTextField();
+//                JPasswordField password = new JPasswordField();
+//                final JComponent[] inputs = new JComponent[] {
+//                    new JLabel("Nhập tên tài khoản"), userName,
+//                    new JLabel("Nhập mật khẩu"), password
+//                };  
+//                int result = JOptionPane.showConfirmDialog(null, inputs, "Tạo tài khoản hội viên", JOptionPane.PLAIN_MESSAGE);
+//                if (result == JOptionPane.OK_OPTION) {
+//                    if(userName.getText().trim().isEmpty()){
+//                        JOptionPane.showMessageDialog(this,
+//                        "Tên tài khoản không được để trống!",
+//                        "Warning",
+//                        JOptionPane.WARNING_MESSAGE);
+//                        return;
+//                    }
+//                    if(String.valueOf(password.getPassword()).trim().isEmpty()){
+//                        JOptionPane.showMessageDialog(this,
+//                        "Mật khẩu không được để trống!",
+//                        "Warning",
+//                        JOptionPane.WARNING_MESSAGE);
+//                        return;
+//                    }
+//                    for(int i = 0; i < Data.listUsers.size(); i++){
+//                        User user = Data.listUsers.get(i);
+//                        if(user.getUserName().equals(userName.getText().trim().toUpperCase())){
+//                            JOptionPane.showMessageDialog(this,
+//                            "Tài khoản này đã tồn tại!",
+//                            "Warning",
+//                            JOptionPane.WARNING_MESSAGE);
+//                            return;
+//                        }
+//                    }
+//                    Data.listUsers.add(new User(userName.getText().trim(), String.valueOf(password.getPassword()).trim(), "Member"));
+//                    refreshTable(Data.listUsers);
+//                }
+//                break;
+//            }
+//            case "btnEdit": {
+//                if(tableSelectedRow > -1){
+//                    String userName = (String) table.getValueAt(tableSelectedRow, 0);
+//                    for(int i = 0; i < Data.listUsers.size(); i++){
+//                        if(userName.equals(Data.listUsers.get(i).getUserName())){
+//                            JTextField edtUserName = new JTextField(userName);
+//                            edtUserName.setEnabled(false);
+//                            JPasswordField edtPassword = new JPasswordField();
+//                            final JComponent[] inputs = new JComponent[] {
+//                                new JLabel("Nhập tên tài khoản"), edtUserName,
+//                                new JLabel("Nhập mật khẩu"), edtPassword
+//                            };  
+//                            int result = JOptionPane.showConfirmDialog(null, inputs, "Tạo tài khoản hội viên", JOptionPane.PLAIN_MESSAGE);
+//                            if (result == JOptionPane.OK_OPTION) {
+//                                if(edtUserName.getText().trim().isEmpty()){
+//                                    JOptionPane.showMessageDialog(this,
+//                                    "Tên tài khoản không được để trống!",
+//                                    "Warning",
+//                                    JOptionPane.WARNING_MESSAGE);
+//                                    return;
+//                                }
+//                                if(String.valueOf(edtPassword.getPassword()).isEmpty()){
+//                                    JOptionPane.showMessageDialog(this,
+//                                    "Mật khẩu không được để trống!",
+//                                    "Warning",
+//                                    JOptionPane.WARNING_MESSAGE);
+//                                    return;
+//                                }
+//                                for(i = 0; i < Data.listUsers.size(); i++){
+//                                    User user = Data.listUsers.get(i);
+//                                    if(user.getUserName().equals(edtUserName.getText().trim().toUpperCase())){
+//                                        user.setPassword(String.valueOf(edtPassword.getPassword()));
+//                                        return;
+//                                    }
+//                                }
+//                                refreshTable(Data.listUsers);
+//                            }
+//                        }
+//                    }
+//                }
+//                break;
+//            }
+//            case "btnRemove": {
+//                if(tableSelectedRow > -1){
+//                    String userName = (String) table.getValueAt(tableSelectedRow, 0);
+//                    for(int i = 0; i < Data.listUsers.size(); i++){
+//                        User user = Data.listUsers.get(i);
+//                        if(user.getUserName().equals(userName)){
+//                            if(user.getRemainingAmount() > 0){
+//                                JOptionPane.showMessageDialog(this,
+//                                "Chỉ được xóa những tài khoản đã hết tiền!",
+//                                "Warning",
+//                                JOptionPane.WARNING_MESSAGE);
+//                                return;
+//                            }
+//                            Data.listUsers.remove(user);
+//                            refreshTable(Data.listUsers);
+//                            return;
+//                        }
+//                    }
+//                    refreshTable(Data.listUsers);
+//                }
+//                break;
+//            }
+//            case "btnRefresh":{
+//                refreshTable(Data.listUsers);
+//                break;
+//            }
+//            case "btnSearch": {
+//                String text = edtInputToSearch.getText().trim().toUpperCase();
+//                edtInputToSearch.setText("");
+//                ArrayList<User> list = new ArrayList<>();
+//                for(int i = 0; i < Data.listUsers.size(); i++){
+//                    if(Data.listUsers.get(i).getUserName().startsWith(text)){
+//                        list.add(Data.listUsers.get(i));
+//                    }
+//                }
+//                refreshTable(list);
+//                break;
+//            }
+//        }
     }
 }

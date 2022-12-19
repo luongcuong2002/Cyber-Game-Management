@@ -5,8 +5,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
-import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import views.menu.MenuPanel;
 import views.tabs.ParentFrame;
@@ -27,6 +28,14 @@ public class MainFrame extends JFrame{
         this.setBackground(Color.white);
         this.add(menuPanel, BorderLayout.NORTH);
         this.add(parentFrame, BorderLayout.CENTER);
+        
+        this.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                Data.saveData();
+            }
+        });
     }
     
     public static void main(String[] args) throws IOException {

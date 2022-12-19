@@ -21,7 +21,6 @@ public class ParentFrame extends JTabbedPane{
         this.setBackground(Color.white);
         this.addTab("Máy trạm", computerClientTab);
         this.addTab("Tài khoản", accountTab);
-        this.addTab("Nhật ký hệ thống", systemHistoryTab);
         this.addTab("Nhật ký giao dịch", transactionHistoryTab);
         this.addTab("Nhóm máy", computerGroupTab);
         this.addTab("Nhóm người dùng", userGroupTab);
@@ -30,8 +29,21 @@ public class ParentFrame extends JTabbedPane{
         this.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
+                if(ParentFrame.this.getSelectedIndex() == 0){
+                    computerClientTab.refreshTable();
+                    return;
+                }
                 if(ParentFrame.this.getSelectedIndex() == 1){ // account
                     accountTab.refreshTable(Data.listUsers);
+                    return;
+                }
+                if(ParentFrame.this.getSelectedIndex() == 2){
+                    transactionHistoryTab.refreshTable();
+                    return;
+                }
+                if(ParentFrame.this.getSelectedIndex() == 4){
+                    userGroupTab.refreshTable();
+                    return;
                 }
             }
         });

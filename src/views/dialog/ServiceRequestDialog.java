@@ -15,9 +15,15 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.text.NumberFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Vector;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.AbstractAction;
@@ -26,6 +32,7 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -33,16 +40,24 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellEditor;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import models.Computer;
 import models.ServiceCanBeOrdered;
 import models.ServiceCategory;
 import models.ServiceItem;
 import models.TableCellListener;
+import models.TransactionHistoryItem;
 import models.User;
 
 /**
@@ -69,9 +84,14 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
 
     private ArrayList<ServiceCanBeOrdered> listAllOfServices = new ArrayList<ServiceCanBeOrdered>();
 
+    private ArrayList<Boolean> checkList = new ArrayList<>();
+
+    private JCheckBox checkAll;
+
     public ServiceRequestDialog(Computer computer) {
-        addServices();
         this.computer = computer;
+        seupCheckList();
+        addServices();
         Toolkit toolkit = this.getToolkit();
         Dimension dimension = toolkit.getScreenSize();
         this.setBounds(dimension.width / 2 - WIDTH / 2, dimension.height / 2 - HEIGHT / 2, WIDTH, HEIGHT);
@@ -87,14 +107,11 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
 
         JPanel providedPanel = new JPanel();
         providedPanel.setPreferredSize(new Dimension(WIDTH / 2 - 20, HEIGHT - 55));
-        Border border2 = BorderFactory.createTitledBorder("Đã cung cấp");
+        Border border2 = BorderFactory.createTitledBorder("Thực hiện");
         providedPanel.setBorder(border2);
         providedPanel.setLayout(new BoxLayout(providedPanel, BoxLayout.Y_AXIS));
-        tableServiceProvided = new JTable();
-        setupTableServiceProvided();
-        JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setViewportView(tableServiceProvided);
-        providedPanel.add(scrollPane);
+
+        providedPanel.add(renderWrapperJCheckBoxAll());
 
         JPanel bottomProvidedPanel = new JPanel(new BorderLayout());
         JPanel bottomLeftProvidedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
@@ -107,6 +124,12 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
         setupPriceLabelContentForProvided(bottomRightProvidedPanel);
         bottomProvidedPanel.add(bottomRightProvidedPanel, BorderLayout.EAST);
 
+        tableServiceProvided = new JTable();
+        setupTableServiceProvided();
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(tableServiceProvided);
+
+        providedPanel.add(scrollPane);
         providedPanel.add(bottomProvidedPanel);
 
         JPanel addingServicePanel = new JPanel();
@@ -145,6 +168,28 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
         }
     }
 
+    private void seupCheckList() {
+        for (int i = 0; i < computer.getListServicesOrdered().size(); i++) {
+            checkList.add(false);
+        }
+    }
+
+    private JPanel renderWrapperJCheckBoxAll() {
+        JPanel container = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        checkAll = new JCheckBox("Chọn / bỏ chọn tất cả");
+        checkAll.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                for (int i = 0; i < checkList.size(); i++) {
+                    checkList.set(i, e.getStateChange() == 1 ? true : false);
+                };
+                refreshTableServiceProvided();
+            }
+        });
+        container.add(checkAll);
+        return container;
+    }
+
     private void setupButtonProvided() {
         btnProvided = new JButton("Cung cấp");
         btnProvided.setActionCommand("btnProvided");
@@ -171,7 +216,7 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
         parent.add(txtPriceOfServiceWillAdd);
         parent.add(edtPriceOfServiceWillAdd);
     }
-    
+
     private void setupPriceLabelContentForProvided(JPanel parent) {
         txtPriceOfServiceProvided = new JLabel("Giá");
         edtPriceOfServiceProvided = new JTextField("");
@@ -184,7 +229,7 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
     private void setupTableAllOfServices() {
         refreshTableAllOfServices();
         tableAllOfServices = new JTable(tableModelAllOfServices);
-        tableAllOfServices.setRowHeight(30);
+        tableAllOfServices.setRowHeight(35);
         tableAllOfServices.setDefaultRenderer(Object.class, new BoardTableAllOfServiceCellRenderer());
         Action action = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
@@ -211,7 +256,8 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
     private void setupTableServiceProvided() {
         refreshTableServiceProvided();
         tableServiceProvided = new JTable(tableModelServiceProvided);
-        tableServiceProvided.setRowHeight(30);
+        tableServiceProvided.setRowHeight(35);
+        tableServiceProvided.setDefaultRenderer(Object.class, new BoardTableServiceProvidedCellRenderer(this));
     }
 
     public void refreshTableAllOfServices() {
@@ -232,9 +278,9 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
             row.add(String.valueOf(item.getNumber()));
             row.add(item.getServiceItem().getStock() < 0 ? "(Không giới hạn)" : String.valueOf(item.getServiceItem().getStock()));
             row.add(String.valueOf(item.getServiceItem().getPrice()));
-            if (item.getTotalFee() > 0) {
-                totalAmount += item.getTotalFee();
-                row.add(NumberFormat.getNumberInstance().format(item.getTotalFee()));
+            if (item.getNumber() * item.getServiceItem().getPrice() > 0) {
+                totalAmount += item.getNumber() * item.getServiceItem().getPrice();
+                row.add(NumberFormat.getNumberInstance().format(item.getNumber() * item.getServiceItem().getPrice()));
             } else {
                 row.add("");
             }
@@ -260,7 +306,6 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
 
         if (edtPriceOfServiceWillAdd != null) {
             if (totalAmount > 0) {
-                System.out.println("1");
                 edtPriceOfServiceWillAdd.setText(NumberFormat.getNumberInstance().format(totalAmount));
             } else {
                 edtPriceOfServiceWillAdd.setText("");
@@ -269,19 +314,77 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
     }
 
     public void refreshTableServiceProvided() {
-        Vector<String> columnNames = new Vector<>();
+        Vector<Object> columnNames = new Vector<>();
+        columnNames.add("");
         columnNames.add("Sản phẩm");
         columnNames.add("Số lượng");
-        columnNames.add("Hàng tồn");
+        columnNames.add("Tình trạng");
         columnNames.add("Đơn giá");
         columnNames.add("Tổng giá tiền");
 
-        Vector<Vector<String>> data = new Vector<Vector<String>>();
+        int totalAmount = 0;
+        boolean checkIfAnyServiceProvided = false;
+        boolean checkIfAnyServiceChecked = false;
+
+        Vector<Vector<Object>> data = new Vector<Vector<Object>>();
+        for (int i = 0; i < computer.getListServicesOrdered().size(); i++) {
+            ServiceCanBeOrdered item = computer.getListServicesOrdered().get(i);
+            Vector<Object> row = new Vector<Object>();
+            if (i < checkList.size()) {
+                row.add(checkList.get(i));
+            } else {
+                row.add(true);
+            }
+            row.add(item.getServiceItem().getName());
+            row.add(String.valueOf(item.getNumber()));
+            row.add(item.isIsProvided() ? "Đã cung cấp" : "");
+            row.add(String.valueOf(item.getServiceItem().getPrice()));
+            row.add(NumberFormat.getNumberInstance().format(item.getNumber() * item.getServiceItem().getPrice()));
+            data.add(row);
+
+            if (i < checkList.size()) {
+                if (checkList.get(i)) {
+                    checkIfAnyServiceChecked = true;
+                    if (item.isIsProvided()) {
+                        checkIfAnyServiceProvided = true;
+                    }
+                    totalAmount += item.getNumber() * item.getServiceItem().getPrice();
+                }
+            }
+        }
 
         tableModelServiceProvided = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
+                if (column == 0) {
+                    return true;
+                }
                 return false;
+            }
+
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                if (columnIndex == 0) {
+                    return Boolean.class;
+                }
+                return String.class;
+            }
+
+            @Override
+            public void setValueAt(Object aValue, int row, int column) {
+                super.setValueAt(aValue, row, column);
+                if (column == 0) {
+                    if ((Boolean) this.getValueAt(row, column) == true) {
+                        if (row < checkList.size()) {
+                            checkList.set(row, true);
+                        }
+                    } else if ((Boolean) this.getValueAt(row, column) == false) {
+                        if (row < checkList.size()) {
+                            checkList.set(row, false);
+                        }
+                    }
+                    ServiceRequestDialog.this.refreshTableServiceProvided();
+                }
             }
         };
 
@@ -291,21 +394,90 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
                 tableServiceProvided.setRowSelectionInterval(rowSelectedTableServiceProvided, rowSelectedTableServiceProvided);
             }
         };
+
+        if (edtPriceOfServiceProvided != null) {
+            if (totalAmount > 0) {
+                edtPriceOfServiceProvided.setText(NumberFormat.getNumberInstance().format(totalAmount));
+            } else {
+                edtPriceOfServiceProvided.setText("");
+            }
+        }
+
+        if (!checkIfAnyServiceChecked) {
+            btnCash.setEnabled(false);
+            btnProvided.setEnabled(false);
+        } else {
+            btnCash.setEnabled(true);
+        }
+
+        if (checkIfAnyServiceProvided) {
+            btnProvided.setEnabled(false);
+        } else if (checkIfAnyServiceChecked) {
+            btnProvided.setEnabled(true);
+        }
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        switch(e.getActionCommand()){
+        switch (e.getActionCommand()) {
             case "btnProvided": {
+                for (int i = 0; i < computer.getListServicesOrdered().size(); i++) {
+                    if (i < checkList.size() && checkList.get(i)) {
+                        ServiceCanBeOrdered item = computer.getListServicesOrdered().get(i);
+                        item.setIsProvided(true);
+                    }
+                }
+                ServiceRequestDialog.this.setVisible(false);
                 break;
             }
             case "btnCash": {
+                for (int i = 0; i < computer.getListServicesOrdered().size(); i++) {
+                    if (i < checkList.size() && checkList.get(i)) {
+                        ServiceCanBeOrdered item = computer.getListServicesOrdered().get(i);
+                        int amount = item.getNumber() * item.getServiceItem().getPrice();
+                        Data.listTransactionHistoryItems.add(new TransactionHistoryItem(
+                                computer.getUserUsing().getUserName(),
+                                null,
+                                Calendar.getInstance().getTime(),
+                                amount,
+                                0,
+                                computer.getUserUsing().getUserGroupName() + " " + computer.getUserUsing().getUserName()
+                                + " đã trả " + NumberFormat.getNumberInstance().format(amount) + " đồng" + " phí dịch vụ bằng tiền mặt."
+                        ));
+                        checkList.remove(i);
+                        computer.getListServicesOrdered().remove(i);
+                        i--;
+                    }
+                }
+                ServiceRequestDialog.this.setVisible(false);
                 break;
             }
             case "btnAdd": {
+                for (int i = 0; i < listAllOfServices.size(); i++) {
+                    if (listAllOfServices.get(i).getNumber() > 0) {
+                        checkList.add(true);
+                        computer.getListServicesOrdered().add(
+                                new ServiceCanBeOrdered(
+                                        listAllOfServices.get(i).getServiceItem().getCloneService(),
+                                        listAllOfServices.get(i).getNumber(),
+                                        false
+                                ));
+                        listAllOfServices.get(i).setNumber(0);
+                    }
+                }
+                ServiceRequestDialog.this.refreshTableAllOfServices();
+                ServiceRequestDialog.this.refreshTableServiceProvided();
                 break;
             }
         }
+    }
+
+    public ArrayList<Boolean> getCheckList() {
+        return checkList;
+    }
+
+    public void setCheckList(ArrayList<Boolean> checkList) {
+        this.checkList = checkList;
     }
 }
 
@@ -337,11 +509,19 @@ class BoardTableAllOfServiceCellRenderer extends DefaultTableCellRenderer {
         container.setBorder(border);
         switch (column) {
             case 0,2: {
-                JTextArea jLabel = new JTextArea(String.valueOf(value).toUpperCase());
-                jLabel.setLineWrap(true);
-                Font newLabelFont = new Font(jLabel.getFont().getName(), Font.PLAIN, fontSize);
-                jLabel.setFont(newLabelFont);
-                container.add(jLabel, BorderLayout.CENTER);
+                JTextPane textPane = new JTextPane();
+                Font newLabelFont = new Font(textPane.getFont().getName(), Font.PLAIN, fontSize);
+                textPane.setFont(newLabelFont);
+                StyledDocument doc = textPane.getStyledDocument();
+                SimpleAttributeSet center = new SimpleAttributeSet();
+                StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+                doc.setParagraphAttributes(0, doc.getLength(), center, false);
+                try {
+                    doc.insertString(doc.getLength(), String.valueOf(value).toUpperCase(), doc.getStyle("regular"));
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(BoardTableServiceProvidedCellRenderer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                container.add(textPane, BorderLayout.CENTER);
                 return container;
             }
             case 1: {
@@ -349,6 +529,69 @@ class BoardTableAllOfServiceCellRenderer extends DefaultTableCellRenderer {
                 Font newLabelFont = new Font(jLabel.getFont().getName(), Font.PLAIN, fontSize);
                 jLabel.setFont(newLabelFont);
                 container.add(jLabel, BorderLayout.CENTER);
+                return container;
+            }
+            default: {
+                JLabel jLabel = new JLabel(String.valueOf(value).toUpperCase(), SwingConstants.CENTER);
+                Font newLabelFont = new Font(jLabel.getFont().getName(), Font.PLAIN, fontSize);
+                jLabel.setFont(newLabelFont);
+                container.add(jLabel, BorderLayout.CENTER);
+                return container;
+            }
+        }
+    }
+}
+
+class BoardTableServiceProvidedCellRenderer extends DefaultTableCellRenderer {
+
+    private int fontSize = 10;
+    private Color colorSelectedText = Color.white;
+    private Color colorUnselectedText = Color.BLACK;
+
+    private ServiceRequestDialog parent;
+
+    public BoardTableServiceProvidedCellRenderer(ServiceRequestDialog parent) {
+        this.parent = parent;
+    }
+
+    @Override
+    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+
+        JPanel container = new JPanel(new BorderLayout());
+        container.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
+        if (row % 2 == 0) {
+            if (column % 2 == 0) {
+                container.setBackground(Color.white);
+            } else {
+                container.setBackground(new Color(247, 247, 247));
+            }
+        } else {
+            if (column % 2 == 1) {
+                container.setBackground(Color.white);
+            } else {
+                container.setBackground(new Color(247, 247, 247));
+            }
+        }
+        Border border = BorderFactory.createLineBorder(new Color(50, 50, 150, 50), 1, true);
+        container.setBorder(border);
+        switch (column) {
+            case 0: {
+                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            }
+            case 1: {
+                JTextPane textPane = new JTextPane();
+                Font newLabelFont = new Font(textPane.getFont().getName(), Font.PLAIN, fontSize);
+                textPane.setFont(newLabelFont);
+                StyledDocument doc = textPane.getStyledDocument();
+                SimpleAttributeSet center = new SimpleAttributeSet();
+                StyleConstants.setAlignment(center, StyleConstants.ALIGN_CENTER);
+                doc.setParagraphAttributes(0, doc.getLength(), center, false);
+                try {
+                    doc.insertString(doc.getLength(), String.valueOf(value), doc.getStyle("regular"));
+                } catch (BadLocationException ex) {
+                    Logger.getLogger(BoardTableServiceProvidedCellRenderer.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                container.add(textPane, BorderLayout.CENTER);
                 return container;
             }
             default: {

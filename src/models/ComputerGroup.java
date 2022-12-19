@@ -1,25 +1,29 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package models;
 
+import com.google.gson.annotations.Expose;
 import java.util.ArrayList;
 import java.util.Map;
 
-/**
- *
- * @author ADMIN
- */
 public class ComputerGroup {
+    
+    @Expose(serialize = true, deserialize = true)
     private String groupName;
+    
+    @Expose(serialize = true, deserialize = true)
     private String description;
+    
+    @Expose(serialize = true, deserialize = true)
     private ArrayList<UserGroup> priceForEachUserGroups;
 
     public ComputerGroup(String groupName, ArrayList<UserGroup> priceForEachUserGroups) {
         this.groupName = groupName;
         this.description = "";
+        this.priceForEachUserGroups = priceForEachUserGroups;
+    }
+    
+    public ComputerGroup(String groupName, String description, ArrayList<UserGroup> priceForEachUserGroups) {
+        this.groupName = groupName;
+        this.description = description;
         this.priceForEachUserGroups = priceForEachUserGroups;
     }
 
@@ -46,6 +50,4 @@ public class ComputerGroup {
     public void setPriceForEachUserGroups(ArrayList<UserGroup> priceForEachUserGroups) {
         this.priceForEachUserGroups = priceForEachUserGroups;
     }
-    
-    
 }

@@ -5,15 +5,27 @@
  */
 package models;
 
+import com.google.gson.annotations.Expose;
+
 /**
  *
  * @author ADMIN
  */
 public class ServiceItem {
+    
+    @Expose(serialize = true, deserialize = true)
     private String name;
+    
+    @Expose(serialize = true, deserialize = true)
     private int price;
+    
+    @Expose(serialize = true, deserialize = true)
     private String unit;
+    
+    @Expose(serialize = true, deserialize = true)
     private int stock;
+    
+    @Expose(serialize = true, deserialize = true)
     private String category;
 
     public ServiceItem(String name, int price, String unit, String category) {

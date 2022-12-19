@@ -1,14 +1,25 @@
 package models;
 
+import com.google.gson.annotations.Expose;
 import data.Data;
 import java.text.NumberFormat;
 import java.util.Locale;
 
 public class User {
+    
+    @Expose(serialize = true, deserialize = true)
     private String userName;
+    
+    @Expose(serialize = true, deserialize = true)
     private String password;
+    
+    @Expose(serialize = true, deserialize = true)
     private int remainingAmount;
+    
+    @Expose(serialize = true, deserialize = true)
     private String userGroupName;
+    
+    @Expose(serialize = true, deserialize = true)
     private boolean isPrepaid = false;
 
     public User(String userName, String password, String userGroupName) { // for member

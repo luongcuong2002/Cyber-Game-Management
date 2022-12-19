@@ -12,14 +12,26 @@ package models;
 public class ServiceCanBeOrdered {
     private ServiceItem serviceItem;
     private int number;
+    private boolean isProvided;
 
     public ServiceCanBeOrdered(ServiceItem serviceItem, int number) {
         this.serviceItem = serviceItem;
         this.number = number;
+        this.isProvided = false;
+    }
+    
+    public ServiceCanBeOrdered(ServiceItem serviceItem, int number, boolean isProvided) {
+        this.serviceItem = serviceItem;
+        this.number = number;
+        this.isProvided = isProvided;
     }
     
     public int getTotalFee(){
-        return number * serviceItem.getPrice();
+        if(isProvided){
+            return number * serviceItem.getPrice();
+        }else{
+            return 0;
+        }
     }
     
     public ServiceItem getServiceItem() {
@@ -37,6 +49,12 @@ public class ServiceCanBeOrdered {
     public void setNumber(int number) {
         this.number = number;
     }
-    
-    
+
+    public boolean isIsProvided() {
+        return isProvided;
+    }
+
+    public void setIsProvided(boolean isProvided) {
+        this.isProvided = isProvided;
+    }
 }

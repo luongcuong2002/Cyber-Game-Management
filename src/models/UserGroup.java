@@ -5,12 +5,18 @@
  */
 package models;
 
+import com.google.gson.annotations.Expose;
+
 /**
  *
  * @author ADMIN
  */
 public class UserGroup {
+    
+    @Expose(serialize = true, deserialize = true)
     private String userGroupName;
+    
+    @Expose(serialize = true, deserialize = true)
     private int price;
 
     public UserGroup(String userGroupName, int price) {
