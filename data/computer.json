@@ -1,1 +1,342 @@
-[{"computerName":"MAY01","computerGroup":{"groupName":"NEW","description":"Máy mới","priceForEachUserGroups":[{"userGroupName":"Guest","price":6000},{"userGroupName":"Member","price":5500}]}},{"computerName":"MAY02","computerGroup":{"groupName":"NEW","description":"Máy mới","priceForEachUserGroups":[{"userGroupName":"Guest","price":6000},{"userGroupName":"Member","price":5500}]}},{"computerName":"MAY03","computerGroup":{"groupName":"NEW","description":"Máy mới","priceForEachUserGroups":[{"userGroupName":"Guest","price":6000},{"userGroupName":"Member","price":5500}]}},{"computerName":"MAY04","computerGroup":{"groupName":"NEW","description":"Máy mới","priceForEachUserGroups":[{"userGroupName":"Guest","price":6000},{"userGroupName":"Member","price":5500}]}},{"computerName":"MAY05","computerGroup":{"groupName":"OLD","description":"Máy cũ","priceForEachUserGroups":[{"userGroupName":"Guest","price":4500},{"userGroupName":"Member","price":4000}]}},{"computerName":"MAY06","computerGroup":{"groupName":"OLD","description":"Máy cũ","priceForEachUserGroups":[{"userGroupName":"Guest","price":4500},{"userGroupName":"Member","price":4000}]}},{"computerName":"MAY07","computerGroup":{"groupName":"OLD","description":"Máy cũ","priceForEachUserGroups":[{"userGroupName":"Guest","price":4500},{"userGroupName":"Member","price":4000}]}},{"computerName":"MAY08","computerGroup":{"groupName":"OLD","description":"Máy cũ","priceForEachUserGroups":[{"userGroupName":"Guest","price":4500},{"userGroupName":"Member","price":4000}]}},{"computerName":"MAY09","computerGroup":{"groupName":"Default","description":"Mặc định","priceForEachUserGroups":[{"userGroupName":"Guest","price":5000},{"userGroupName":"Member","price":5000}]}},{"computerName":"MAY10","computerGroup":{"groupName":"Default","description":"Mặc định","priceForEachUserGroups":[{"userGroupName":"Guest","price":5000},{"userGroupName":"Member","price":5000}]}},{"computerName":"MAY11","computerGroup":{"groupName":"Default","description":"Mặc định","priceForEachUserGroups":[{"userGroupName":"Guest","price":5000},{"userGroupName":"Member","price":5000}]}},{"computerName":"MAY12","computerGroup":{"groupName":"NEW","description":"Máy mới","priceForEachUserGroups":[{"userGroupName":"Guest","price":6000},{"userGroupName":"Member","price":5500}]}},{"computerName":"MAY13","computerGroup":{"groupName":"NEW","description":"Máy mới","priceForEachUserGroups":[{"userGroupName":"Guest","price":6000},{"userGroupName":"Member","price":5500}]}},{"computerName":"MAY15","computerGroup":{"groupName":"NEW","description":"Máy mới","priceForEachUserGroups":[{"userGroupName":"Guest","price":6000},{"userGroupName":"Member","price":5500}]}},{"computerName":"MAY16","computerGroup":{"groupName":"NEW","description":"Máy mới","priceForEachUserGroups":[{"userGroupName":"Guest","price":6000},{"userGroupName":"Member","price":5500}]}},{"computerName":"MAY17","computerGroup":{"groupName":"Default","description":"Mặc định","priceForEachUserGroups":[{"userGroupName":"Guest","price":5000},{"userGroupName":"Member","price":5000}]}},{"computerName":"MAY18","computerGroup":{"groupName":"Default","description":"Mặc định","priceForEachUserGroups":[{"userGroupName":"Guest","price":5000},{"userGroupName":"Member","price":5000}]}},{"computerName":"MAY19","computerGroup":{"groupName":"Default","description":"Mặc định","priceForEachUserGroups":[{"userGroupName":"Guest","price":5000},{"userGroupName":"Member","price":5000}]}},{"computerName":"MAY20","computerGroup":{"groupName":"Default","description":"Mặc định","priceForEachUserGroups":[{"userGroupName":"Guest","price":5000},{"userGroupName":"Member","price":5000}]}},{"computerName":"MAY21","computerGroup":{"groupName":"Default","description":"Mặc định","priceForEachUserGroups":[{"userGroupName":"Guest","price":5000},{"userGroupName":"Member","price":5000}]}}]
+[
+  {
+    "computerName": "MAY01",
+    "computerGroup": {
+      "groupName": "NEW",
+      "description": "Máy mới",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 6000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5500
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY02",
+    "computerGroup": {
+      "groupName": "NEW",
+      "description": "Máy mới",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 6000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5500
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY03",
+    "computerGroup": {
+      "groupName": "NEW",
+      "description": "Máy mới",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 6000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5500
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY04",
+    "computerGroup": {
+      "groupName": "NEW",
+      "description": "Máy mới",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 6000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5500
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY05",
+    "computerGroup": {
+      "groupName": "OLD",
+      "description": "Máy cũ",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 4500
+        },
+        {
+          "userGroupName": "Member",
+          "price": 4000
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY06",
+    "computerGroup": {
+      "groupName": "OLD",
+      "description": "Máy cũ",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 4500
+        },
+        {
+          "userGroupName": "Member",
+          "price": 4000
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY07",
+    "computerGroup": {
+      "groupName": "OLD",
+      "description": "Máy cũ",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 4500
+        },
+        {
+          "userGroupName": "Member",
+          "price": 4000
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY08",
+    "computerGroup": {
+      "groupName": "OLD",
+      "description": "Máy cũ",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 4500
+        },
+        {
+          "userGroupName": "Member",
+          "price": 4000
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY09",
+    "computerGroup": {
+      "groupName": "Default",
+      "description": "Mặc định",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 5000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5000
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY10",
+    "computerGroup": {
+      "groupName": "Default",
+      "description": "Mặc định",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 5000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5000
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY11",
+    "computerGroup": {
+      "groupName": "Default",
+      "description": "Mặc định",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 5000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5000
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY12",
+    "computerGroup": {
+      "groupName": "NEW",
+      "description": "Máy mới",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 6000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5500
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY13",
+    "computerGroup": {
+      "groupName": "NEW",
+      "description": "Máy mới",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 6000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5500
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY15",
+    "computerGroup": {
+      "groupName": "NEW",
+      "description": "Máy mới",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 6000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5500
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY16",
+    "computerGroup": {
+      "groupName": "NEW",
+      "description": "Máy mới",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 6000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5500
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY17",
+    "computerGroup": {
+      "groupName": "Default",
+      "description": "Mặc định",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 5000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5000
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY18",
+    "computerGroup": {
+      "groupName": "Default",
+      "description": "Mặc định",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 5000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5000
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY19",
+    "computerGroup": {
+      "groupName": "Default",
+      "description": "Mặc định",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 5000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5000
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY20",
+    "computerGroup": {
+      "groupName": "Default",
+      "description": "Mặc định",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 5000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5000
+        }
+      ]
+    }
+  },
+  {
+    "computerName": "MAY21",
+    "computerGroup": {
+      "groupName": "Default",
+      "description": "Mặc định",
+      "priceForEachUserGroups": [
+        {
+          "userGroupName": "Guest",
+          "price": 5000
+        },
+        {
+          "userGroupName": "Member",
+          "price": 5000
+        }
+      ]
+    }
+  }
+]
