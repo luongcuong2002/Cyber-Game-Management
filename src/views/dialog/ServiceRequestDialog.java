@@ -53,9 +53,9 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 import models.Computer;
-import models.ServiceCanBeOrdered;
-import models.ServiceCategory;
-import models.ServiceItem;
+import models.ProductCanBeOrdered;
+import models.ProductCategory;
+import models.ProductItem;
 import models.TableCellListener;
 import models.TransactionHistoryItem;
 import models.User;
@@ -72,17 +72,17 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
 
     private Computer computer;
 
-    private JTable tableAllOfServices, tableServiceProvided;
-    private DefaultTableModel tableModelAllOfServices, tableModelServiceProvided;
+    private JTable tableAllOfProducts, tableProductProvided;
+    private DefaultTableModel tableModelAllOfProducts, tableModelProductProvided;
 
     private JButton btnProvided, btnCash, btnAdd;
-    private JTextField edtPriceOfServiceProvided, edtPriceOfServiceWillAdd;
-    private JLabel txtPriceOfServiceProvided, txtPriceOfServiceWillAdd;
+    private JTextField edtPriceOfProductProvided, edtPriceOfProductWillAdd;
+    private JLabel txtPriceOfProductProvided, txtPriceOfProductWillAdd;
 
-    private int rowSelectedTableAllOfServices = -1;
-    private int rowSelectedTableServiceProvided = -1;
+    private int rowSelectedTableAllOfProducts = -1;
+    private int rowSelectedTableProductProvided = -1;
 
-    private ArrayList<ServiceCanBeOrdered> listAllOfServices = new ArrayList<ServiceCanBeOrdered>();
+    private ArrayList<ProductCanBeOrdered> listAllOfProducts = new ArrayList<ProductCanBeOrdered>();
 
     private ArrayList<Boolean> checkList = new ArrayList<>();
 
@@ -91,7 +91,7 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
     public ServiceRequestDialog(Computer computer) {
         this.computer = computer;
         seupCheckList();
-        addServices();
+        addProducts();
         Toolkit toolkit = this.getToolkit();
         Dimension dimension = toolkit.getScreenSize();
         this.setBounds(dimension.width / 2 - WIDTH / 2, dimension.height / 2 - HEIGHT / 2, WIDTH, HEIGHT);
@@ -124,52 +124,52 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
         setupPriceLabelContentForProvided(bottomRightProvidedPanel);
         bottomProvidedPanel.add(bottomRightProvidedPanel, BorderLayout.EAST);
 
-        tableServiceProvided = new JTable();
-        setupTableServiceProvided();
+        tableProductProvided = new JTable();
+        setupTableProductProvided();
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setViewportView(tableServiceProvided);
+        scrollPane.setViewportView(tableProductProvided);
 
         providedPanel.add(scrollPane);
         providedPanel.add(bottomProvidedPanel);
 
-        JPanel addingServicePanel = new JPanel();
-        addingServicePanel.setPreferredSize(new Dimension(WIDTH / 2 - 20, HEIGHT - 55));
+        JPanel addingProductPanel = new JPanel();
+        addingProductPanel.setPreferredSize(new Dimension(WIDTH / 2 - 20, HEIGHT - 55));
         Border border3 = BorderFactory.createTitledBorder("Thêm dịch vụ");
-        addingServicePanel.setBorder(border3);
-        addingServicePanel.setLayout(new BoxLayout(addingServicePanel, BoxLayout.Y_AXIS));
-        tableAllOfServices = new JTable();
-        setupTableAllOfServices();
+        addingProductPanel.setBorder(border3);
+        addingProductPanel.setLayout(new BoxLayout(addingProductPanel, BoxLayout.Y_AXIS));
+        tableAllOfProducts = new JTable();
+        setupTableAllOfProducts();
         JScrollPane scrollPane1 = new JScrollPane();
-        scrollPane1.setViewportView(tableAllOfServices);
-        addingServicePanel.add(scrollPane1);
+        scrollPane1.setViewportView(tableAllOfProducts);
+        addingProductPanel.add(scrollPane1);
 
-        JPanel bottomAddingServicePanel = new JPanel(new BorderLayout());
-        JPanel bottomLeftAddingServicePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
+        JPanel bottomAddingProductPanel = new JPanel(new BorderLayout());
+        JPanel bottomLeftAddingProductPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 5));
         setupButtonAdd();
-        bottomLeftAddingServicePanel.add(btnAdd);
-        bottomAddingServicePanel.add(bottomLeftAddingServicePanel, BorderLayout.WEST);
-        JPanel bottomRightAddingServicePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 10));
-        setupPriceLabelContentForListServices(bottomRightAddingServicePanel);
-        bottomAddingServicePanel.add(bottomRightAddingServicePanel, BorderLayout.EAST);
+        bottomLeftAddingProductPanel.add(btnAdd);
+        bottomAddingProductPanel.add(bottomLeftAddingProductPanel, BorderLayout.WEST);
+        JPanel bottomRightAddingProductPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 10));
+        setupPriceLabelContentForListProducts(bottomRightAddingProductPanel);
+        bottomAddingProductPanel.add(bottomRightAddingProductPanel, BorderLayout.EAST);
 
-        addingServicePanel.add(bottomAddingServicePanel);
+        addingProductPanel.add(bottomAddingProductPanel);
 
         container.add(providedPanel);
-        container.add(addingServicePanel);
+        container.add(addingProductPanel);
     }
 
-    private void addServices() {
-        for (int i = 0; i < Data.listServiceCategories.size(); i++) {
-            ServiceCategory category = Data.listServiceCategories.get(i);
-            for (int j = 0; j < category.getListServiceItems().size(); j++) {
-                ServiceItem item = category.getListServiceItems().get(j);
-                listAllOfServices.add(new ServiceCanBeOrdered(item.getCloneService(), 0));
+    private void addProducts() {
+        for (int i = 0; i < Data.listProductCategories.size(); i++) {
+            ProductCategory category = Data.listProductCategories.get(i);
+            for (int j = 0; j < category.getListProductItems().size(); j++) {
+                ProductItem item = category.getListProductItems().get(j);
+                listAllOfProducts.add(new ProductCanBeOrdered(item.getCloneProduct(), 0));
             }
         }
     }
 
     private void seupCheckList() {
-        for (int i = 0; i < computer.getListServicesOrdered().size(); i++) {
+        for (int i = 0; i < computer.getListProductsOrdered().size(); i++) {
             checkList.add(false);
         }
     }
@@ -183,7 +183,7 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
                 for (int i = 0; i < checkList.size(); i++) {
                     checkList.set(i, e.getStateChange() == 1 ? true : false);
                 };
-                refreshTableServiceProvided();
+                refreshTableProductProvided();
             }
         });
         container.add(checkAll);
@@ -208,29 +208,29 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
         btnAdd.addActionListener(this);
     }
 
-    private void setupPriceLabelContentForListServices(JPanel parent) {
-        txtPriceOfServiceWillAdd = new JLabel("Giá");
-        edtPriceOfServiceWillAdd = new JTextField("");
-        edtPriceOfServiceWillAdd.setPreferredSize(new Dimension(80, 20));
-        edtPriceOfServiceWillAdd.setEditable(false);
-        parent.add(txtPriceOfServiceWillAdd);
-        parent.add(edtPriceOfServiceWillAdd);
+    private void setupPriceLabelContentForListProducts(JPanel parent) {
+        txtPriceOfProductWillAdd = new JLabel("Giá");
+        edtPriceOfProductWillAdd = new JTextField("");
+        edtPriceOfProductWillAdd.setPreferredSize(new Dimension(80, 20));
+        edtPriceOfProductWillAdd.setEditable(false);
+        parent.add(txtPriceOfProductWillAdd);
+        parent.add(edtPriceOfProductWillAdd);
     }
 
     private void setupPriceLabelContentForProvided(JPanel parent) {
-        txtPriceOfServiceProvided = new JLabel("Giá");
-        edtPriceOfServiceProvided = new JTextField("");
-        edtPriceOfServiceProvided.setPreferredSize(new Dimension(80, 20));
-        edtPriceOfServiceProvided.setEditable(false);
-        parent.add(txtPriceOfServiceProvided);
-        parent.add(edtPriceOfServiceProvided);
+        txtPriceOfProductProvided = new JLabel("Giá");
+        edtPriceOfProductProvided = new JTextField("");
+        edtPriceOfProductProvided.setPreferredSize(new Dimension(80, 20));
+        edtPriceOfProductProvided.setEditable(false);
+        parent.add(txtPriceOfProductProvided);
+        parent.add(edtPriceOfProductProvided);
     }
 
-    private void setupTableAllOfServices() {
-        refreshTableAllOfServices();
-        tableAllOfServices = new JTable(tableModelAllOfServices);
-        tableAllOfServices.setRowHeight(35);
-        tableAllOfServices.setDefaultRenderer(Object.class, new BoardTableAllOfServiceCellRenderer());
+    private void setupTableAllOfProducts() {
+        refreshTableAllOfProducts();
+        tableAllOfProducts = new JTable(tableModelAllOfProducts);
+        tableAllOfProducts.setRowHeight(35);
+        tableAllOfProducts.setDefaultRenderer(Object.class, new BoardTableAllOfProductCellRenderer());
         Action action = new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 TableCellListener tableCellListener = (TableCellListener) e.getSource();
@@ -243,51 +243,49 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
                     } else {
                         int number = Integer.parseInt((String) tableCellListener.getNewValue());
                         value = String.valueOf(number);
-                        listAllOfServices.get(tableCellListener.getRow()).setNumber(number);
-                        refreshTableAllOfServices();
+                        listAllOfProducts.get(tableCellListener.getRow()).setNumber(number);
+                        refreshTableAllOfProducts();
                     }
-                    tableAllOfServices.setValueAt(value, tableCellListener.getRow(), tableCellListener.getColumn());
+                    tableAllOfProducts.setValueAt(value, tableCellListener.getRow(), tableCellListener.getColumn());
                 }
             }
         };
-        TableCellListener tcl = new TableCellListener(tableAllOfServices, action);
+        TableCellListener tcl = new TableCellListener(tableAllOfProducts, action);
     }
 
-    private void setupTableServiceProvided() {
-        refreshTableServiceProvided();
-        tableServiceProvided = new JTable(tableModelServiceProvided);
-        tableServiceProvided.setRowHeight(35);
-        tableServiceProvided.setDefaultRenderer(Object.class, new BoardTableServiceProvidedCellRenderer(this));
+    private void setupTableProductProvided() {
+        refreshTableProductProvided();
+        tableProductProvided = new JTable(tableModelProductProvided);
+        tableProductProvided.setRowHeight(35);
+        tableProductProvided.setDefaultRenderer(Object.class, new BoardTableProductProvidedCellRenderer(this));
     }
 
-    public void refreshTableAllOfServices() {
+    public void refreshTableAllOfProducts() {
         Vector<String> columnNames = new Vector<>();
         columnNames.add("Sản phẩm");
         columnNames.add("Số lượng");
-        columnNames.add("Hàng tồn");
         columnNames.add("Đơn giá");
         columnNames.add("Tổng giá tiền");
 
         int totalAmount = 0;
 
         Vector<Vector<String>> data = new Vector<Vector<String>>();
-        for (int i = 0; i < listAllOfServices.size(); i++) {
-            ServiceCanBeOrdered item = listAllOfServices.get(i);
+        for (int i = 0; i < listAllOfProducts.size(); i++) {
+            ProductCanBeOrdered item = listAllOfProducts.get(i);
             Vector<String> row = new Vector<String>();
-            row.add(item.getServiceItem().getName());
+            row.add(item.getProductItem().getName());
             row.add(String.valueOf(item.getNumber()));
-            row.add(item.getServiceItem().getStock() < 0 ? "(Không giới hạn)" : String.valueOf(item.getServiceItem().getStock()));
-            row.add(String.valueOf(item.getServiceItem().getPrice()));
-            if (item.getNumber() * item.getServiceItem().getPrice() > 0) {
-                totalAmount += item.getNumber() * item.getServiceItem().getPrice();
-                row.add(NumberFormat.getNumberInstance().format(item.getNumber() * item.getServiceItem().getPrice()));
+            row.add(String.valueOf(item.getProductItem().getPrice()));
+            if (item.getNumber() * item.getProductItem().getPrice() > 0) {
+                totalAmount += item.getNumber() * item.getProductItem().getPrice();
+                row.add(NumberFormat.getNumberInstance().format(item.getNumber() * item.getProductItem().getPrice()));
             } else {
                 row.add("");
             }
             data.add(row);
         }
 
-        tableModelAllOfServices = new DefaultTableModel(data, columnNames) {
+        tableModelAllOfProducts = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 if (column == 1) {
@@ -297,23 +295,23 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
             }
         };
 
-        if (tableAllOfServices != null) {
-            tableAllOfServices.setModel(tableModelAllOfServices);
-            if (rowSelectedTableAllOfServices > -1) {
-                tableAllOfServices.setRowSelectionInterval(rowSelectedTableAllOfServices, rowSelectedTableAllOfServices);
+        if (tableAllOfProducts != null) {
+            tableAllOfProducts.setModel(tableModelAllOfProducts);
+            if (rowSelectedTableAllOfProducts > -1) {
+                tableAllOfProducts.setRowSelectionInterval(rowSelectedTableAllOfProducts, rowSelectedTableAllOfProducts);
             }
         };
 
-        if (edtPriceOfServiceWillAdd != null) {
+        if (edtPriceOfProductWillAdd != null) {
             if (totalAmount > 0) {
-                edtPriceOfServiceWillAdd.setText(NumberFormat.getNumberInstance().format(totalAmount));
+                edtPriceOfProductWillAdd.setText(NumberFormat.getNumberInstance().format(totalAmount));
             } else {
-                edtPriceOfServiceWillAdd.setText("");
+                edtPriceOfProductWillAdd.setText("");
             }
         }
     }
 
-    public void refreshTableServiceProvided() {
+    public void refreshTableProductProvided() {
         Vector<Object> columnNames = new Vector<>();
         columnNames.add("");
         columnNames.add("Sản phẩm");
@@ -323,37 +321,37 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
         columnNames.add("Tổng giá tiền");
 
         int totalAmount = 0;
-        boolean checkIfAnyServiceProvided = false;
-        boolean checkIfAnyServiceChecked = false;
+        boolean checkIfAnyProductProvided = false;
+        boolean checkIfAnyProductChecked = false;
 
         Vector<Vector<Object>> data = new Vector<Vector<Object>>();
-        for (int i = 0; i < computer.getListServicesOrdered().size(); i++) {
-            ServiceCanBeOrdered item = computer.getListServicesOrdered().get(i);
+        for (int i = 0; i < computer.getListProductsOrdered().size(); i++) {
+            ProductCanBeOrdered item = computer.getListProductsOrdered().get(i);
             Vector<Object> row = new Vector<Object>();
             if (i < checkList.size()) {
                 row.add(checkList.get(i));
             } else {
                 row.add(true);
             }
-            row.add(item.getServiceItem().getName());
+            row.add(item.getProductItem().getName());
             row.add(String.valueOf(item.getNumber()));
             row.add(item.isIsProvided() ? "Đã cung cấp" : "");
-            row.add(String.valueOf(item.getServiceItem().getPrice()));
-            row.add(NumberFormat.getNumberInstance().format(item.getNumber() * item.getServiceItem().getPrice()));
+            row.add(String.valueOf(item.getProductItem().getPrice()));
+            row.add(NumberFormat.getNumberInstance().format(item.getNumber() * item.getProductItem().getPrice()));
             data.add(row);
 
             if (i < checkList.size()) {
                 if (checkList.get(i)) {
-                    checkIfAnyServiceChecked = true;
+                    checkIfAnyProductChecked = true;
                     if (item.isIsProvided()) {
-                        checkIfAnyServiceProvided = true;
+                        checkIfAnyProductProvided = true;
                     }
-                    totalAmount += item.getNumber() * item.getServiceItem().getPrice();
+                    totalAmount += item.getNumber() * item.getProductItem().getPrice();
                 }
             }
         }
 
-        tableModelServiceProvided = new DefaultTableModel(data, columnNames) {
+        tableModelProductProvided = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 if (column == 0) {
@@ -383,36 +381,36 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
                             checkList.set(row, false);
                         }
                     }
-                    ServiceRequestDialog.this.refreshTableServiceProvided();
+                    ServiceRequestDialog.this.refreshTableProductProvided();
                 }
             }
         };
 
-        if (tableServiceProvided != null) {
-            tableServiceProvided.setModel(tableModelServiceProvided);
-            if (rowSelectedTableServiceProvided > -1) {
-                tableServiceProvided.setRowSelectionInterval(rowSelectedTableServiceProvided, rowSelectedTableServiceProvided);
+        if (tableProductProvided != null) {
+            tableProductProvided.setModel(tableModelProductProvided);
+            if (rowSelectedTableProductProvided > -1) {
+                tableProductProvided.setRowSelectionInterval(rowSelectedTableProductProvided, rowSelectedTableProductProvided);
             }
         };
 
-        if (edtPriceOfServiceProvided != null) {
+        if (edtPriceOfProductProvided != null) {
             if (totalAmount > 0) {
-                edtPriceOfServiceProvided.setText(NumberFormat.getNumberInstance().format(totalAmount));
+                edtPriceOfProductProvided.setText(NumberFormat.getNumberInstance().format(totalAmount));
             } else {
-                edtPriceOfServiceProvided.setText("");
+                edtPriceOfProductProvided.setText("");
             }
         }
 
-        if (!checkIfAnyServiceChecked) {
+        if (!checkIfAnyProductChecked) {
             btnCash.setEnabled(false);
             btnProvided.setEnabled(false);
         } else {
             btnCash.setEnabled(true);
         }
 
-        if (checkIfAnyServiceProvided) {
+        if (checkIfAnyProductProvided) {
             btnProvided.setEnabled(false);
-        } else if (checkIfAnyServiceChecked) {
+        } else if (checkIfAnyProductChecked) {
             btnProvided.setEnabled(true);
         }
     }
@@ -421,9 +419,9 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case "btnProvided": {
-                for (int i = 0; i < computer.getListServicesOrdered().size(); i++) {
+                for (int i = 0; i < computer.getListProductsOrdered().size(); i++) {
                     if (i < checkList.size() && checkList.get(i)) {
-                        ServiceCanBeOrdered item = computer.getListServicesOrdered().get(i);
+                        ProductCanBeOrdered item = computer.getListProductsOrdered().get(i);
                         item.setIsProvided(true);
                     }
                 }
@@ -431,10 +429,10 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
                 break;
             }
             case "btnCash": {
-                for (int i = 0; i < computer.getListServicesOrdered().size(); i++) {
+                for (int i = 0; i < computer.getListProductsOrdered().size(); i++) {
                     if (i < checkList.size() && checkList.get(i)) {
-                        ServiceCanBeOrdered item = computer.getListServicesOrdered().get(i);
-                        int amount = item.getNumber() * item.getServiceItem().getPrice();
+                        ProductCanBeOrdered item = computer.getListProductsOrdered().get(i);
+                        int amount = item.getNumber() * item.getProductItem().getPrice();
                         Data.listTransactionHistoryItems.add(new TransactionHistoryItem(
                                 computer.getUserUsing().getUserName(),
                                 null,
@@ -445,7 +443,7 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
                                 + " đã trả " + NumberFormat.getNumberInstance().format(amount) + " đồng" + " phí dịch vụ bằng tiền mặt."
                         ));
                         checkList.remove(i);
-                        computer.getListServicesOrdered().remove(i);
+                        computer.getListProductsOrdered().remove(i);
                         i--;
                     }
                 }
@@ -453,20 +451,19 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
                 break;
             }
             case "btnAdd": {
-                for (int i = 0; i < listAllOfServices.size(); i++) {
-                    if (listAllOfServices.get(i).getNumber() > 0) {
+                for (int i = 0; i < listAllOfProducts.size(); i++) {
+                    if (listAllOfProducts.get(i).getNumber() > 0) {
                         checkList.add(true);
-                        computer.getListServicesOrdered().add(
-                                new ServiceCanBeOrdered(
-                                        listAllOfServices.get(i).getServiceItem().getCloneService(),
-                                        listAllOfServices.get(i).getNumber(),
+                        computer.getListProductsOrdered().add(new ProductCanBeOrdered(
+                                        listAllOfProducts.get(i).getProductItem().getCloneProduct(),
+                                        listAllOfProducts.get(i).getNumber(),
                                         false
                                 ));
-                        listAllOfServices.get(i).setNumber(0);
+                        listAllOfProducts.get(i).setNumber(0);
                     }
                 }
-                ServiceRequestDialog.this.refreshTableAllOfServices();
-                ServiceRequestDialog.this.refreshTableServiceProvided();
+                ServiceRequestDialog.this.refreshTableAllOfProducts();
+                ServiceRequestDialog.this.refreshTableProductProvided();
                 break;
             }
         }
@@ -481,7 +478,7 @@ public class ServiceRequestDialog extends JDialog implements ActionListener {
     }
 }
 
-class BoardTableAllOfServiceCellRenderer extends DefaultTableCellRenderer {
+class BoardTableAllOfProductCellRenderer extends DefaultTableCellRenderer {
 
     private int fontSize = 10;
     private Color colorSelectedText = Color.white;
@@ -519,7 +516,7 @@ class BoardTableAllOfServiceCellRenderer extends DefaultTableCellRenderer {
                 try {
                     doc.insertString(doc.getLength(), String.valueOf(value).toUpperCase(), doc.getStyle("regular"));
                 } catch (BadLocationException ex) {
-                    Logger.getLogger(BoardTableServiceProvidedCellRenderer.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(BoardTableProductProvidedCellRenderer.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 container.add(textPane, BorderLayout.CENTER);
                 return container;
@@ -542,7 +539,7 @@ class BoardTableAllOfServiceCellRenderer extends DefaultTableCellRenderer {
     }
 }
 
-class BoardTableServiceProvidedCellRenderer extends DefaultTableCellRenderer {
+class BoardTableProductProvidedCellRenderer extends DefaultTableCellRenderer {
 
     private int fontSize = 10;
     private Color colorSelectedText = Color.white;
@@ -550,7 +547,7 @@ class BoardTableServiceProvidedCellRenderer extends DefaultTableCellRenderer {
 
     private ServiceRequestDialog parent;
 
-    public BoardTableServiceProvidedCellRenderer(ServiceRequestDialog parent) {
+    public BoardTableProductProvidedCellRenderer(ServiceRequestDialog parent) {
         this.parent = parent;
     }
 
@@ -589,7 +586,7 @@ class BoardTableServiceProvidedCellRenderer extends DefaultTableCellRenderer {
                 try {
                     doc.insertString(doc.getLength(), String.valueOf(value), doc.getStyle("regular"));
                 } catch (BadLocationException ex) {
-                    Logger.getLogger(BoardTableServiceProvidedCellRenderer.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(BoardTableProductProvidedCellRenderer.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 container.add(textPane, BorderLayout.CENTER);
                 return container;

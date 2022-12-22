@@ -9,37 +9,37 @@ package models;
  *
  * @author ADMIN
  */
-public class ServiceCanBeOrdered {
-    private ServiceItem serviceItem;
+public class ProductCanBeOrdered {
+    private ProductItem productItem;
     private int number;
     private boolean isProvided;
 
-    public ServiceCanBeOrdered(ServiceItem serviceItem, int number) {
-        this.serviceItem = serviceItem;
+    public ProductCanBeOrdered(ProductItem productItem, int number) {
+        this.productItem = productItem;
         this.number = number;
         this.isProvided = false;
     }
     
-    public ServiceCanBeOrdered(ServiceItem serviceItem, int number, boolean isProvided) {
-        this.serviceItem = serviceItem;
+    public ProductCanBeOrdered(ProductItem productItem, int number, boolean isProvided) {
+        this.productItem = productItem;
         this.number = number;
         this.isProvided = isProvided;
     }
     
     public int getTotalFee(){
         if(isProvided){
-            return number * serviceItem.getPrice();
+            return number * productItem.getPrice();
         }else{
             return 0;
         }
     }
     
-    public ServiceItem getServiceItem() {
-        return serviceItem;
+    public ProductItem getProductItem() {
+        return productItem;
     }
 
-    public void setServiceItem(ServiceItem serviceItem) {
-        this.serviceItem = serviceItem;
+    public void setProductItem(ProductItem productItem) {
+        this.productItem = productItem;
     }
 
     public int getNumber() {

@@ -25,6 +25,7 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import models.Computer;
 import models.User;
 import views.popup.ComputerClientPopUp;
@@ -137,6 +138,11 @@ public class ComputerClient extends JPanel {
                 }
             }
         });
+        
+        JTableHeader jTableHeader = table.getTableHeader();
+        jTableHeader.setReorderingAllowed(false);
+        jTableHeader.setBackground(new Color(184, 255, 217));
+        jTableHeader.setForeground(Color.black);
     }
 
     public void refreshTable() {
@@ -189,7 +195,7 @@ public class ComputerClient extends JPanel {
                 row.add("");
             }
             row.add(computer.getComputerGroup().getGroupName());
-            row.add(computer.getNote());
+            row.add(computer.getNote() != null ? computer.getNote() : "");
             data.add(row);
         }
 
@@ -303,8 +309,8 @@ class BoardTableCellRenderer extends DefaultTableCellRenderer {
                             if (computer.getListTransactionsTransfer().size() > 0) {
                                 container.setBackground(Color.orange);
                             }
-                            for (int i = 0; i < computer.getListServicesOrdered().size(); i++) {
-                                if (computer.getListServicesOrdered().get(i).isIsProvided()) {
+                            for (int i = 0; i < computer.getListProductsOrdered().size(); i++) {
+                                if (computer.getListProductsOrdered().get(i).isIsProvided()) {
                                     container.setBackground(new Color(8, 173, 173));
                                     break;
                                 }

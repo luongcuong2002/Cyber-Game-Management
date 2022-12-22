@@ -14,21 +14,21 @@ import javax.swing.JOptionPane;
  *
  * @author ADMIN
  */
-public class ServiceCategory {
+public class ProductCategory {
 
     @Expose(serialize = true, deserialize = true)
     private String name;
     
     @Expose(serialize = true, deserialize = true)
-    private ArrayList<ServiceItem> listServiceItems = new ArrayList<>();
+    private ArrayList<ProductItem> listProductItems = new ArrayList<>();
 
-    public ServiceCategory(String name) {
+    public ProductCategory(String name) {
         this.name = name;
     }
 
-    public void addServiceItem(ServiceItem item) {
-        for (int i = 0; i < listServiceItems.size(); i++) {
-            if (listServiceItems.get(i).getName().equals(item.getName())) {
+    public void addProductItem(ProductItem item) {
+        for (int i = 0; i < listProductItems.size(); i++) {
+            if (listProductItems.get(i).getName().equals(item.getName())) {
                 JOptionPane.showMessageDialog(null,
                         "Dịch vụ này đã tồn tại!",
                         "Warning",
@@ -36,13 +36,13 @@ public class ServiceCategory {
                 return;
             }
         }
-        listServiceItems.add(item);
+        listProductItems.add(item);
     }
     
-    public void removeServiceItem(String name){
-        for (int i = 0; i < listServiceItems.size(); i++) {
-            if (listServiceItems.get(i).getName().equals(name)) {
-                listServiceItems.remove(listServiceItems.get(i));
+    public void removeProductItem(String name){
+        for (int i = 0; i < listProductItems.size(); i++) {
+            if (listProductItems.get(i).getName().equals(name)) {
+                listProductItems.remove(listProductItems.get(i));
                 return;
             }
         }
@@ -60,11 +60,11 @@ public class ServiceCategory {
         this.name = name;
     }
 
-    public ArrayList<ServiceItem> getListServiceItems() {
-        return listServiceItems;
+    public ArrayList<ProductItem> getListProductItems() {
+        return listProductItems;
     }
 
-    public void setListServiceItems(ArrayList<ServiceItem> listServiceItems) {
-        this.listServiceItems = listServiceItems;
+    public void setListProductItems(ArrayList<ProductItem> listProductItems) {
+        this.listProductItems = listProductItems;
     }
 }

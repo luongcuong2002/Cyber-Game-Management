@@ -1,11 +1,13 @@
 package views.tabs;
 
+import com.formdev.flatlaf.extras.FlatSVGIcon;
 import com.github.lgooddatepicker.components.DatePickerSettings;
 import com.github.lgooddatepicker.components.DateTimePicker;
 import com.github.lgooddatepicker.components.TimePickerSettings;
 import com.github.lgooddatepicker.optionalusertools.DateTimeChangeListener;
 import com.github.lgooddatepicker.zinternaltools.DateChangeEvent;
 import com.github.lgooddatepicker.zinternaltools.DateTimeChangeEvent;
+import com.github.lgooddatepicker.zinternaltools.TimeChangeEvent;
 import com.toedter.calendar.JDateChooser;
 import data.Data;
 import java.awt.BorderLayout;
@@ -23,11 +25,16 @@ import java.awt.event.MouseListener;
 import java.io.File;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Vector;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -42,10 +49,12 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerModel;
+import javax.swing.border.Border;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import models.Computer;
 import models.PlaceholderTextField;
 import models.TransactionHistoryItem;
@@ -54,104 +63,102 @@ import screens.MainFrame;
 import views.popup.AccountPopup;
 import views.popup.ComputerClientPopUp;
 
-public class TransactionHistory extends JPanel implements ActionListener{
-    
+public class TransactionHistory extends JPanel implements ActionListener {
+
     private JTable table;
     private JPanel controller, tableWrapper;
     private JButton btnAdd, btnEdit, btnRemove, btnRefresh, btnSearch;
     private PlaceholderTextField edtInputToSearch;
     private AbstractTableModel tableModel;
-    
+
     private int tableSelectedRow = -1;
     private int buttonSize = 25;
-    
-    private final String mainUri = System.getProperty("user.dir") + File.separator + "res" + File.separator + "icons" + File.separator;
-    
-    public TransactionHistory(){
-        
+
+    private LocalDateTime timeStart, timeEnd;
+
+    public TransactionHistory() {
+
         this.setLayout(new BorderLayout());
-        
+
         setupController();
         setupTable();
         this.setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(table);
-        
+
         tableWrapper = new JPanel(new BorderLayout());
         tableWrapper.add(scrollPane, BorderLayout.CENTER);
         this.add(tableWrapper, BorderLayout.CENTER);
-        
+
         this.add(controller, BorderLayout.NORTH);
     }
-    
-    private void setupController(){
+
+    private void setupController() {
         controller = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        
+
+        Border border = BorderFactory.createLineBorder(new Color(50, 50, 150, 50), 1, true);
+
         btnRefresh = new JButton();
         btnRefresh.setActionCommand("btnRefresh");
         btnRefresh.addActionListener(this);
-        btnRefresh.setPreferredSize(new Dimension(buttonSize,buttonSize));
-        try{
-            Image image = ImageIO.read(new File( mainUri + "ic_refresh.png")).getScaledInstance(buttonSize, buttonSize, Image.SCALE_DEFAULT);
-            btnRefresh.setIcon(new ImageIcon(image));
-        } 
-        catch (Exception e) {}
+        btnRefresh.setPreferredSize(new Dimension(buttonSize, buttonSize));
+        btnRefresh.setPreferredSize(new Dimension(buttonSize, buttonSize));
+        btnRefresh.setIcon(new FlatSVGIcon("icons/ic_refresh.svg", buttonSize, buttonSize));
+        btnRefresh.setBorder(border);
+        btnRefresh.setFocusPainted(false);
+        btnRefresh.setContentAreaFilled(false);
 
         edtInputToSearch = new PlaceholderTextField("");
         edtInputToSearch.setPlaceholder("Nhập tên tài khoản để tìm kiếm");
         edtInputToSearch.setPreferredSize(new Dimension(200, buttonSize));
-        
+
         btnSearch = new JButton();
         btnSearch.setActionCommand("btnSearch");
         btnSearch.addActionListener(this);
-        btnSearch.setPreferredSize(new Dimension(buttonSize,buttonSize));
-        try{
-            Image image = ImageIO.read(new File( mainUri + "ic_search.png")).getScaledInstance(buttonSize, buttonSize, Image.SCALE_DEFAULT);
-            btnSearch.setIcon(new ImageIcon(image));
-        } 
-        catch (Exception e) {}
-        
+        btnSearch.setPreferredSize(new Dimension(buttonSize, buttonSize));
+        btnSearch.setPreferredSize(new Dimension(buttonSize, buttonSize));
+        btnSearch.setIcon(new FlatSVGIcon("icons/ic_search.svg", buttonSize, buttonSize));
+        btnSearch.setBorder(border);
+        btnSearch.setFocusPainted(false);
+        btnSearch.setContentAreaFilled(false);
+
         DatePickerSettings dateSettingsForTimeStart = new DatePickerSettings();
         dateSettingsForTimeStart.setFormatForDatesCommonEra("dd-MM-yyyy");
         dateSettingsForTimeStart.setAllowEmptyDates(false);
         dateSettingsForTimeStart.setAllowKeyboardEditing(false);
-        
+
         TimePickerSettings timeSettingsForTimeStart = new TimePickerSettings();
         timeSettingsForTimeStart.setFormatForDisplayTime("HH:mm");
         timeSettingsForTimeStart.setAllowEmptyTimes(false);
         timeSettingsForTimeStart.setAllowKeyboardEditing(false);
-        
+
         DatePickerSettings dateSettingsForTimeEnd = new DatePickerSettings();
         dateSettingsForTimeEnd.setFormatForDatesCommonEra("dd-MM-yyyy");
         dateSettingsForTimeEnd.setAllowEmptyDates(false);
         dateSettingsForTimeEnd.setAllowKeyboardEditing(false);
-        
+
         TimePickerSettings timeSettingsForTimeEnd = new TimePickerSettings();
         timeSettingsForTimeEnd.setFormatForDisplayTime("HH:mm");
         timeSettingsForTimeEnd.setAllowEmptyTimes(false);
         timeSettingsForTimeEnd.setAllowKeyboardEditing(false);
-        
+
         DateTimePicker dateTimeStartPicker = new DateTimePicker(dateSettingsForTimeStart, timeSettingsForTimeStart);
         dateTimeStartPicker.addDateTimeChangeListener(new DateTimeChangeListener() {
             @Override
             public void dateOrTimeChanged(DateTimeChangeEvent event) {
-                DateChangeEvent dateEvent = event.getDateChangeEvent();
-                if (dateEvent != null) {
-                    dateEvent.getNewDate(); // new date
-                }
+                timeStart = event.getNewDateTimeStrict();
             }
         });
-        
+        timeStart = dateTimeStartPicker.getDateTimeStrict();
+
         DateTimePicker dateTimeEndPicker = new DateTimePicker(dateSettingsForTimeEnd, timeSettingsForTimeEnd);
         dateTimeEndPicker.addDateTimeChangeListener(new DateTimeChangeListener() {
             @Override
             public void dateOrTimeChanged(DateTimeChangeEvent event) {
-                DateChangeEvent dateEvent = event.getDateChangeEvent();
-                if (dateEvent != null) {
-                    dateEvent.getNewDate(); // new date
-                }
+                timeEnd = event.getNewDateTimeStrict();
             }
         });
-        
+        timeEnd = dateTimeStartPicker.getDateTimeStrict();
+
         controller.add(new JLabel("Bắt đầu:"));
         controller.add(dateTimeStartPicker);
         controller.add(new JLabel("Kết thúc:"));
@@ -160,10 +167,10 @@ public class TransactionHistory extends JPanel implements ActionListener{
         controller.add(edtInputToSearch);
         controller.add(btnSearch);
     }
-    
-    private void setupTable(){
-       
-        refreshTable();
+
+    private void setupTable() {
+
+        refreshTable(Data.listTransactionHistoryItems);
         table = new JTable(tableModel);
         table.setRowHeight(20);
         table.addMouseListener(new MouseAdapter() {
@@ -180,18 +187,19 @@ public class TransactionHistory extends JPanel implements ActionListener{
                     }
 
                     int rowindex = table.getSelectedRow();
-                    if (rowindex < 0)
+                    if (rowindex < 0) {
                         return;
-                    if (event.getComponent() instanceof JTable ) {
+                    }
+                    if (event.getComponent() instanceof JTable) {
                         //AccountPopup menu = new AccountPopup(Account.this, table.getValueAt(rowindex, 0).toString());
                         //menu.show(event.getComponent(), event.getX(), event.getY());
                     }
-                } 
+                }
             }
 
             @Override
             public void mouseClicked(MouseEvent event) {
-                if(event.getButton() != MouseEvent.BUTTON1){
+                if (event.getButton() != MouseEvent.BUTTON1) {
                     return;
                 }
                 if (event.getClickCount() == 2) {
@@ -208,9 +216,14 @@ public class TransactionHistory extends JPanel implements ActionListener{
                 }
             }
         });
+        
+        JTableHeader jTableHeader = table.getTableHeader();
+        jTableHeader.setReorderingAllowed(false);
+        jTableHeader.setBackground(new Color(184, 236, 255));
+        jTableHeader.setForeground(Color.black);
     }
-    
-    public void refreshTable(){
+
+    public void refreshTable(List<TransactionHistoryItem> list) {
         Vector<String> columnNames = new Vector<>();
         columnNames.add("Tên người sử dụng");
         columnNames.add("Ngày bắt đầu");
@@ -220,20 +233,20 @@ public class TransactionHistory extends JPanel implements ActionListener{
         columnNames.add("Tiền");
         columnNames.add("Thời gian đã sử dụng");
         columnNames.add("Ghi chú");
-        
+
         SimpleDateFormat formater;
-        
+
         Vector<Vector<String>> data = new Vector<>();
-        for(int i = Data.listTransactionHistoryItems.size() - 1; i >= 0;i--){
+        for (int i = list.size() - 1; i >= 0; i--) {
             Vector<String> row = new Vector<>();
-            TransactionHistoryItem item = Data.listTransactionHistoryItems.get(i);
+            TransactionHistoryItem item = list.get(i);
             row.add(item.getUserName());
-            if(item.getTimeStart() != null){
+            if (item.getTimeStart() != null) {
                 formater = new SimpleDateFormat("dd-MM-yyyy");
                 row.add(formater.format(item.getTimeStart()));
                 formater = new SimpleDateFormat("HH:mm:ss");
                 row.add(formater.format(item.getTimeStart()));
-            }else{
+            } else {
                 row.add("");
                 row.add("");
             }
@@ -243,26 +256,40 @@ public class TransactionHistory extends JPanel implements ActionListener{
             row.add(formater.format(item.getTimeMadeTransaction()));
             row.add(NumberFormat.getNumberInstance().format(item.getAmount()));
             String timeUsed;
-            if(item.getTimeUsedByMinute() / 60 == 0){
+            if (item.getTimeUsedByMinute() / 60 == 0) {
                 timeUsed = String.valueOf(item.getTimeUsedByMinute()) + "Phút";
-            }else{
+            } else {
                 timeUsed = item.getTimeUsedByMinute() / 60 + "Giờ " + (item.getTimeUsedByMinute() % 60) + "Phút";
             }
             row.add(timeUsed);
             row.add(item.getDescription());
             data.add(row);
         }
-        
-        tableModel = new DefaultTableModel(data, columnNames){
+
+        tableModel = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
             }
         };
-        
-        if(table != null){
+
+        if (table != null) {
             table.setModel(tableModel);
-            if(tableSelectedRow > -1) table.setRowSelectionInterval(tableSelectedRow, tableSelectedRow);
+            table.getColumnModel().getColumn(0).setMaxWidth(120);
+            table.getColumnModel().getColumn(1).setMaxWidth(100);
+            table.getColumnModel().getColumn(2).setMaxWidth(100);
+            table.getColumnModel().getColumn(3).setMaxWidth(100);
+            table.getColumnModel().getColumn(4).setMaxWidth(100);
+            table.getColumnModel().getColumn(5).setMaxWidth(100);
+            table.getColumnModel().getColumn(6).setMaxWidth(130);
+            table.getColumnModel().getColumn(0).setMinWidth(120);
+            table.getColumnModel().getColumn(1).setMinWidth(100);
+            table.getColumnModel().getColumn(2).setMinWidth(100);
+            table.getColumnModel().getColumn(3).setMinWidth(100);
+            table.getColumnModel().getColumn(4).setMinWidth(100);
+            table.getColumnModel().getColumn(5).setMinWidth(100);
+            table.getColumnModel().getColumn(6).setMinWidth(130);
+            table.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         };
     }
 
@@ -273,7 +300,7 @@ public class TransactionHistory extends JPanel implements ActionListener{
     public void setTableModel(AbstractTableModel tableModel) {
         this.tableModel = tableModel;
     }
-    
+
     public JTable getTable() {
         return table;
     }
@@ -284,125 +311,26 @@ public class TransactionHistory extends JPanel implements ActionListener{
 
     @Override
     public void actionPerformed(ActionEvent e) {
-//        switch(e.getActionCommand()){
-//            case "btnAdd": {
-//                JTextField userName = new JTextField();
-//                JPasswordField password = new JPasswordField();
-//                final JComponent[] inputs = new JComponent[] {
-//                    new JLabel("Nhập tên tài khoản"), userName,
-//                    new JLabel("Nhập mật khẩu"), password
-//                };  
-//                int result = JOptionPane.showConfirmDialog(null, inputs, "Tạo tài khoản hội viên", JOptionPane.PLAIN_MESSAGE);
-//                if (result == JOptionPane.OK_OPTION) {
-//                    if(userName.getText().trim().isEmpty()){
-//                        JOptionPane.showMessageDialog(this,
-//                        "Tên tài khoản không được để trống!",
-//                        "Warning",
-//                        JOptionPane.WARNING_MESSAGE);
-//                        return;
-//                    }
-//                    if(String.valueOf(password.getPassword()).trim().isEmpty()){
-//                        JOptionPane.showMessageDialog(this,
-//                        "Mật khẩu không được để trống!",
-//                        "Warning",
-//                        JOptionPane.WARNING_MESSAGE);
-//                        return;
-//                    }
-//                    for(int i = 0; i < Data.listUsers.size(); i++){
-//                        User user = Data.listUsers.get(i);
-//                        if(user.getUserName().equals(userName.getText().trim().toUpperCase())){
-//                            JOptionPane.showMessageDialog(this,
-//                            "Tài khoản này đã tồn tại!",
-//                            "Warning",
-//                            JOptionPane.WARNING_MESSAGE);
-//                            return;
-//                        }
-//                    }
-//                    Data.listUsers.add(new User(userName.getText().trim(), String.valueOf(password.getPassword()).trim(), "Member"));
-//                    refreshTable(Data.listUsers);
-//                }
-//                break;
-//            }
-//            case "btnEdit": {
-//                if(tableSelectedRow > -1){
-//                    String userName = (String) table.getValueAt(tableSelectedRow, 0);
-//                    for(int i = 0; i < Data.listUsers.size(); i++){
-//                        if(userName.equals(Data.listUsers.get(i).getUserName())){
-//                            JTextField edtUserName = new JTextField(userName);
-//                            edtUserName.setEnabled(false);
-//                            JPasswordField edtPassword = new JPasswordField();
-//                            final JComponent[] inputs = new JComponent[] {
-//                                new JLabel("Nhập tên tài khoản"), edtUserName,
-//                                new JLabel("Nhập mật khẩu"), edtPassword
-//                            };  
-//                            int result = JOptionPane.showConfirmDialog(null, inputs, "Tạo tài khoản hội viên", JOptionPane.PLAIN_MESSAGE);
-//                            if (result == JOptionPane.OK_OPTION) {
-//                                if(edtUserName.getText().trim().isEmpty()){
-//                                    JOptionPane.showMessageDialog(this,
-//                                    "Tên tài khoản không được để trống!",
-//                                    "Warning",
-//                                    JOptionPane.WARNING_MESSAGE);
-//                                    return;
-//                                }
-//                                if(String.valueOf(edtPassword.getPassword()).isEmpty()){
-//                                    JOptionPane.showMessageDialog(this,
-//                                    "Mật khẩu không được để trống!",
-//                                    "Warning",
-//                                    JOptionPane.WARNING_MESSAGE);
-//                                    return;
-//                                }
-//                                for(i = 0; i < Data.listUsers.size(); i++){
-//                                    User user = Data.listUsers.get(i);
-//                                    if(user.getUserName().equals(edtUserName.getText().trim().toUpperCase())){
-//                                        user.setPassword(String.valueOf(edtPassword.getPassword()));
-//                                        return;
-//                                    }
-//                                }
-//                                refreshTable(Data.listUsers);
-//                            }
-//                        }
-//                    }
-//                }
-//                break;
-//            }
-//            case "btnRemove": {
-//                if(tableSelectedRow > -1){
-//                    String userName = (String) table.getValueAt(tableSelectedRow, 0);
-//                    for(int i = 0; i < Data.listUsers.size(); i++){
-//                        User user = Data.listUsers.get(i);
-//                        if(user.getUserName().equals(userName)){
-//                            if(user.getRemainingAmount() > 0){
-//                                JOptionPane.showMessageDialog(this,
-//                                "Chỉ được xóa những tài khoản đã hết tiền!",
-//                                "Warning",
-//                                JOptionPane.WARNING_MESSAGE);
-//                                return;
-//                            }
-//                            Data.listUsers.remove(user);
-//                            refreshTable(Data.listUsers);
-//                            return;
-//                        }
-//                    }
-//                    refreshTable(Data.listUsers);
-//                }
-//                break;
-//            }
-//            case "btnRefresh":{
-//                refreshTable(Data.listUsers);
-//                break;
-//            }
-//            case "btnSearch": {
-//                String text = edtInputToSearch.getText().trim().toUpperCase();
-//                edtInputToSearch.setText("");
-//                ArrayList<User> list = new ArrayList<>();
-//                for(int i = 0; i < Data.listUsers.size(); i++){
-//                    if(Data.listUsers.get(i).getUserName().startsWith(text)){
-//                        list.add(Data.listUsers.get(i));
-//                    }
-//                }
-//                refreshTable(list);
-//                break;
-//            }
-//        }
+        switch (e.getActionCommand()) {
+            case "btnRefresh": {
+                refreshTable(Data.listTransactionHistoryItems);
+                break;
+            }
+            case "btnSearch": {
+                String text = edtInputToSearch.getText().trim().toUpperCase();
+                ArrayList<TransactionHistoryItem> list = new ArrayList<>();
+                for (int i = 0; i < Data.listTransactionHistoryItems.size(); i++) {
+                    TransactionHistoryItem item = Data.listTransactionHistoryItems.get(i);
+                    LocalDateTime timeMadeTrans = LocalDateTime.ofInstant(item.getTimeMadeTransaction().toInstant(), ZoneId.systemDefault());
+                    if (item.getUserName().startsWith(text)
+                            && timeMadeTrans.isBefore(timeEnd)
+                            && timeMadeTrans.isAfter(timeStart)) {
+                        list.add(Data.listTransactionHistoryItems.get(i));
+                    }
+                }
+                refreshTable(list);
+                break;
+            }
+        }
     }
 }

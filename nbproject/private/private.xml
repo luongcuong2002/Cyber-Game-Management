@@ -3,23 +3,16 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/models/TransactionHistoryItem.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/models/Computer.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/models/ServiceCategory.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/views/menu/MenuPanel.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/models/TableCellListener.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/models/User.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/views/tabs/ParentFrame.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/views/dialog/BillDialog.java</file>
+            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/views/dialog/TransferDialog.java</file>
             <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/views/tabs/Account.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/views/tabs/ComputerClient.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/data/Data.java</file>
+            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/models/ProductItem.java</file>
             <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/views/dialog/ServiceRequestDialog.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/models/TransactionTransfer.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/models/ServiceCanBeOrdered.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/models/PlaceholderTextField.java</file>
-            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/models/ServiceItem.java</file>
+            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/views/tabs/UserGroup.java</file>
+            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/models/Computer.java</file>
+            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/views/dialog/ProductCategoryDialog.java</file>
+            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/views/popup/ComputerClientPopUp.java</file>
             <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/screens/MainFrame.java</file>
+            <file>file:/C:/Users/ADMIN/Documents/NetBeansProjects/QuanLyQuanGame/src/views/component/Footer.java</file>
         </group>
     </open-files>
 </project-private>

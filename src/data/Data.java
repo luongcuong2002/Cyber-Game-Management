@@ -12,11 +12,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import models.Computer;
 import models.ComputerGroup;
-import models.ServiceCategory;
-import models.ServiceItem;
+import models.ProductCategory;
 import models.TransactionHistoryItem;
 import models.User;
-import models.UserGroup;
 
 public abstract class Data {
 
@@ -24,13 +22,13 @@ public abstract class Data {
     private static final String computerGroupPath = rootPath + File.separator + "computer_group.json";
     private static final String computerPath = rootPath + File.separator + "computer.json";
     private static final String userPath = rootPath + File.separator + "user.json";
-    private static final String servicePath = rootPath + File.separator + "service.json";
+    private static final String productPath = rootPath + File.separator + "product.json";
     private static final String transactionHistoryPath = rootPath + File.separator + "transaction_history.json";
 
     public static ArrayList<ComputerGroup> computerGroups = new ArrayList<>();
     public static ArrayList<Computer> listComputers = new ArrayList<>();
     public static ArrayList<User> listUsers = new ArrayList<>();
-    public static ArrayList<ServiceCategory> listServiceCategories = new ArrayList<>();
+    public static ArrayList<ProductCategory> listProductCategories = new ArrayList<>();
     public static ArrayList<TransactionHistoryItem> listTransactionHistoryItems = new ArrayList<>();
 
     public static void getData() {
@@ -45,7 +43,7 @@ public abstract class Data {
         setUpComputerGroups();
         setUpListComputers();
         setUpListUsers();
-        setUpListServiceCategories();
+        setUpListProductCategories();
         setUpListTransactionHistoryItems();
     }
 
@@ -97,13 +95,13 @@ public abstract class Data {
         }
 
         try {
-            file = new File(servicePath);
+            file = new File(productPath);
             if (!file.exists()) {
                 file.createNewFile();
             }
             fw = new FileWriter(file);
-            String serviceJson = gson.toJson(listServiceCategories);
-            fw.write(serviceJson);
+            String productJson = gson.toJson(listProductCategories);
+            fw.write(productJson);
             fw.close();
         } catch (Exception e) {
             System.out.println(e);
@@ -212,7 +210,7 @@ public abstract class Data {
             }
         } else {
             for (int i = 0; i < listComputers.size(); i++) {
-                listComputers.get(i).setListServicesOrdered(new ArrayList<>());
+                listComputers.get(i).setListProductsOrdered(new ArrayList<>());
                 listComputers.get(i).setListTransactionsTransfer(new ArrayList<>());
             }
         }
@@ -255,10 +253,10 @@ public abstract class Data {
         }
     }
 
-    private static void setUpListServiceCategories() {
+    private static void setUpListProductCategories() {
         Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
         try {
-            File file = new File(servicePath);
+            File file = new File(productPath);
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -267,42 +265,42 @@ public abstract class Data {
             fis.read(data);
             fis.close();
             String json = new String(data, "UTF-8");
-            Type listType = new TypeToken<ArrayList<ServiceCategory>>() {
+            Type listType = new TypeToken<ArrayList<ProductCategory>>() {
             }.getType();
-            listServiceCategories = gson.fromJson(json, listType);
+            listProductCategories = gson.fromJson(json, listType);
         } catch (Exception e) {
             System.out.println(e);
         }
 
-        if (listServiceCategories == null) {
+        if (listProductCategories == null) {
             try {
-                throw new Exception("Can't read service.json");
-//                listServiceCategories.add(new ServiceCategory("ĐỒ VẶT"));
-//                listServiceCategories.get(0).addServiceItem(new ServiceItem("BIM THƯỜNG", 5000, "VNĐ", "ĐỒ VẶT"));
-//                listServiceCategories.get(0).addServiceItem(new ServiceItem("BIM POCA", 7000, "VNĐ", "ĐỒ VẶT"));
-//                listServiceCategories.get(0).addServiceItem(new ServiceItem("BIM MIX", 12000, "VNĐ", "ĐỒ VẶT"));
-//                listServiceCategories.get(0).addServiceItem(new ServiceItem("ĐẬU PHỘNG", 15000, "VNĐ", "ĐỒ VẶT"));
+                throw new Exception("Can't read product.json");
+//                listProductCategories.add(new ProductCategory("ĐỒ VẶT"));
+//                listProductCategories.get(0).addProductItem(new ProductItem("BIM THƯỜNG", 5000, "VNĐ", "ĐỒ VẶT"));
+//                listProductCategories.get(0).addProductItem(new ProductItem("BIM POCA", 7000, "VNĐ", "ĐỒ VẶT"));
+//                listProductCategories.get(0).addProductItem(new ProductItem("BIM MIX", 12000, "VNĐ", "ĐỒ VẶT"));
+//                listProductCategories.get(0).addProductItem(new ProductItem("ĐẬU PHỘNG", 15000, "VNĐ", "ĐỒ VẶT"));
 //
-//                listServiceCategories.add(new ServiceCategory("MÌ TÔM"));
-//                listServiceCategories.get(1).addServiceItem(new ServiceItem("1 MÌ 1 TRỨNG 1 XÚC XÍCH", 30000, "VNĐ", "MÌ TÔM"));
-//                listServiceCategories.get(1).addServiceItem(new ServiceItem("2 MÌ 1 TRỨNG 1 XÚC XÍCH", 35000, "VNĐ", "MÌ TÔM"));
-//                listServiceCategories.get(1).addServiceItem(new ServiceItem("XÚC XÍCH RÁN", 10000, "VNĐ", "MÌ TÔM"));
-//                listServiceCategories.get(1).addServiceItem(new ServiceItem("MÌ TRỨNG XÚC XÍCH RAU", 30000, "VNĐ", "MÌ TÔM"));
+//                listProductCategories.add(new ProductCategory("MÌ TÔM"));
+//                listProductCategories.get(1).addProductItem(new ProductItem("1 MÌ 1 TRỨNG 1 XÚC XÍCH", 30000, "VNĐ", "MÌ TÔM"));
+//                listProductCategories.get(1).addProductItem(new ProductItem("2 MÌ 1 TRỨNG 1 XÚC XÍCH", 35000, "VNĐ", "MÌ TÔM"));
+//                listProductCategories.get(1).addProductItem(new ProductItem("XÚC XÍCH RÁN", 10000, "VNĐ", "MÌ TÔM"));
+//                listProductCategories.get(1).addProductItem(new ProductItem("MÌ TRỨNG XÚC XÍCH RAU", 30000, "VNĐ", "MÌ TÔM"));
 //
-//                listServiceCategories.add(new ServiceCategory("NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("BÒ HÚC", 15000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC C2", 10000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC DỪA", 10000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC STING ĐỎ", 10000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC STING ĐEN", 10000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC STING VÀNG", 10000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC LỌC", 5000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC TRÀ ĐÀO", 10000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC YẾN", 10000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC Ô LONG", 10000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC COCA", 10000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC PEPSI", 10000, "VNĐ", "NƯỚC"));
-//                listServiceCategories.get(2).addServiceItem(new ServiceItem("NƯỚC 7 UP", 10000, "VNĐ", "NƯỚC"));
+//                listProductCategories.add(new ProductCategory("NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("BÒ HÚC", 15000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC C2", 10000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC DỪA", 10000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC STING ĐỎ", 10000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC STING ĐEN", 10000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC STING VÀNG", 10000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC LỌC", 5000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC TRÀ ĐÀO", 10000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC YẾN", 10000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC Ô LONG", 10000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC COCA", 10000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC PEPSI", 10000, "VNĐ", "NƯỚC"));
+//                listProductCategories.get(2).addProductItem(new ProductItem("NƯỚC 7 UP", 10000, "VNĐ", "NƯỚC"));
             } catch (Exception e) {
             }
         }
@@ -342,18 +340,6 @@ public abstract class Data {
         for (int i = 0; i < Data.listUsers.size(); i++) {
             if (Data.listUsers.get(i).getUserName().equals(userName)) {
                 return Data.listUsers.get(i);
-            }
-        }
-        return null;
-    }
-
-    public static User getUserPrePaidByUserName(String userName) {
-
-        // bad structure: Mỗi một class chỉ nên thực hiện một chức năng nhất định
-        for (int i = 0; i < Data.listUsers.size(); i++) {
-            User user = Data.listUsers.get(i);
-            if (user.getUserGroupName().equals("Guest") && user.isIsPrepaid()) {
-                return user;
             }
         }
         return null;

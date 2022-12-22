@@ -26,8 +26,8 @@ import javax.swing.JTable;
 import javax.swing.border.Border;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableModel;
-import models.ServiceCategory;
-import models.ServiceItem;
+import models.ProductCategory;
+import models.ProductItem;
 import com.formdev.flatlaf.extras.FlatSVGIcon;
 import data.Data;
 import java.awt.BorderLayout;
@@ -72,16 +72,17 @@ import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import models.Computer;
 import models.PlaceholderTextField;
-import models.ServiceCategory;
-import models.ServiceItem;
+import models.ProductCategory;
+import models.ProductItem;
 import models.User;
 import screens.MainFrame;
 import views.popup.AccountPopup;
 import views.popup.ComputerClientPopUp;
 
-public class UserGroup extends JPanel implements ActionListener{
+public class UserGroup extends JPanel{ // implements ActionListener{
     
     private JTable table;
     private JPanel controller, tableWrapper;
@@ -95,7 +96,7 @@ public class UserGroup extends JPanel implements ActionListener{
         
         this.setLayout(new BorderLayout());
         
-        setupController();
+        //setupController();
         setupTable();
         this.setLayout(new BorderLayout());
         JScrollPane scrollPane = new JScrollPane(table);
@@ -104,51 +105,51 @@ public class UserGroup extends JPanel implements ActionListener{
         tableWrapper.add(scrollPane, BorderLayout.CENTER);
         this.add(tableWrapper, BorderLayout.CENTER);
         
-        this.add(controller, BorderLayout.NORTH);
+        //this.add(controller, BorderLayout.NORTH);
     }
     
-    private void setupController(){
-                
-        Border border = BorderFactory.createLineBorder(new Color(50,50,150, 50), 1, true);
-        
-        controller = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        btnAdd = new JButton();
-        btnAdd.setActionCommand("btnAdd");
-        btnAdd.addActionListener(this);
-        btnAdd.setPreferredSize(new Dimension(buttonSize,buttonSize));
-        btnAdd.setIcon(new FlatSVGIcon("icons/ic_add.svg", buttonSize, buttonSize));
-        btnAdd.setBorder(border);
-        btnAdd.setFocusPainted(false);
-        btnAdd.setContentAreaFilled(false);
-        
-        btnEdit = new JButton();
-        btnEdit.setActionCommand("btnEdit");
-        btnEdit.addActionListener(this);
-        btnEdit.setPreferredSize(new Dimension(buttonSize,buttonSize));
-        btnEdit.setIcon(new FlatSVGIcon("icons/ic_edit.svg", buttonSize, buttonSize));
-        btnEdit.setBorder(border);
-        btnEdit.setFocusPainted(false);
-        btnEdit.setContentAreaFilled(false);
-        
-        btnRemove = new JButton();
-        btnRemove.setActionCommand("btnRemove");
-        btnRemove.addActionListener(this);
-        btnRemove.setPreferredSize(new Dimension(buttonSize,buttonSize));
-        btnRemove.setIcon(new FlatSVGIcon("icons/ic_remove.svg", buttonSize, buttonSize));
-        btnRemove.setBorder(border);
-        btnRemove.setFocusPainted(false);
-        btnRemove.setContentAreaFilled(false);
-        
-        controller.add(btnAdd);
-        controller.add(btnEdit);
-        controller.add(btnRemove);
-        controller.add(new JPanel(){ // adding space
-            @Override
-            public Dimension preferredSize() {
-                return new Dimension(buttonSize,0);
-            }
-        });
-    }
+//    private void setupController(){
+//                
+//        Border border = BorderFactory.createLineBorder(new Color(50,50,150, 50), 1, true);
+//        
+//        controller = new JPanel(new FlowLayout(FlowLayout.LEFT));
+//        btnAdd = new JButton();
+//        btnAdd.setActionCommand("btnAdd");
+//        btnAdd.addActionListener(this);
+//        btnAdd.setPreferredSize(new Dimension(buttonSize,buttonSize));
+//        btnAdd.setIcon(new FlatSVGIcon("icons/ic_add.svg", buttonSize, buttonSize));
+//        btnAdd.setBorder(border);
+//        btnAdd.setFocusPainted(false);
+//        btnAdd.setContentAreaFilled(false);
+//        
+//        btnEdit = new JButton();
+//        btnEdit.setActionCommand("btnEdit");
+//        btnEdit.addActionListener(this);
+//        btnEdit.setPreferredSize(new Dimension(buttonSize,buttonSize));
+//        btnEdit.setIcon(new FlatSVGIcon("icons/ic_edit.svg", buttonSize, buttonSize));
+//        btnEdit.setBorder(border);
+//        btnEdit.setFocusPainted(false);
+//        btnEdit.setContentAreaFilled(false);
+//        
+//        btnRemove = new JButton();
+//        btnRemove.setActionCommand("btnRemove");
+//        btnRemove.addActionListener(this);
+//        btnRemove.setPreferredSize(new Dimension(buttonSize,buttonSize));
+//        btnRemove.setIcon(new FlatSVGIcon("icons/ic_remove.svg", buttonSize, buttonSize));
+//        btnRemove.setBorder(border);
+//        btnRemove.setFocusPainted(false);
+//        btnRemove.setContentAreaFilled(false);
+//        
+//        controller.add(btnAdd);
+//        controller.add(btnEdit);
+//        controller.add(btnRemove);
+//        controller.add(new JPanel(){ // adding space
+//            @Override
+//            public Dimension preferredSize() {
+//                return new Dimension(buttonSize,0);
+//            }
+//        });
+//    }
     
     private void setupTable(){
        
@@ -175,6 +176,11 @@ public class UserGroup extends JPanel implements ActionListener{
                 }
             }
         });
+        
+        JTableHeader jTableHeader = table.getTableHeader();
+        jTableHeader.setReorderingAllowed(false);
+        jTableHeader.setBackground(new Color(184, 255, 243));
+        jTableHeader.setForeground(Color.black);
     }
     
     public void refreshTable(){
@@ -231,25 +237,25 @@ public class UserGroup extends JPanel implements ActionListener{
         this.table = table;
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        switch(e.getActionCommand()){
-            case "btnAdd": {
-                break;
-            }
-            case "btnEdit": {
-                if(tableSelectedRow > -1){
-//                    
-                }
-                break;
-            }
-            case "btnRemove": {
-                if(tableSelectedRow > -1){
-
-                }
-                break;
-            }
-        }
-    }
+//    @Override
+//    public void actionPerformed(ActionEvent e) {
+//        switch(e.getActionCommand()){
+//            case "btnAdd": {
+//                break;
+//            }
+//            case "btnEdit": {
+//                if(tableSelectedRow > -1){
+////                    
+//                }
+//                break;
+//            }
+//            case "btnRemove": {
+//                if(tableSelectedRow > -1){
+//
+//                }
+//                break;
+//            }
+//        }
+//    }
 }
 

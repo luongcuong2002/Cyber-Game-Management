@@ -16,71 +16,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.NumberFormat;
 import java.util.Vector;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.border.Border;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableModel;
-import models.ServiceCategory;
-import models.ServiceItem;
-import com.formdev.flatlaf.extras.FlatSVGIcon;
-import data.Data;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.imageio.ImageIO;
-import javax.swing.BorderFactory;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPasswordField;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.border.AbstractBorder;
 import javax.swing.border.Border;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
-import models.Computer;
-import models.PlaceholderTextField;
-import models.ServiceCategory;
-import models.ServiceItem;
-import models.User;
-import screens.MainFrame;
+import javax.swing.table.JTableHeader;
 import views.dialog.ComputerGroupManagerDialog;
-import views.popup.AccountPopup;
-import views.popup.ComputerClientPopUp;
 
 public class ComputerGroup extends JPanel implements ActionListener{
     
@@ -173,6 +120,11 @@ public class ComputerGroup extends JPanel implements ActionListener{
                 }
             }
         });
+        
+        JTableHeader jTableHeader = table.getTableHeader();
+        jTableHeader.setReorderingAllowed(false);
+        jTableHeader.setBackground(new Color(255, 255, 184));
+        jTableHeader.setForeground(Color.black);
     }
     
     public void refreshTable(){

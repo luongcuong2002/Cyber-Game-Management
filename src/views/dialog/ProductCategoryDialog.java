@@ -29,14 +29,16 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import models.Computer;
-import models.ServiceCategory;
+import models.ProductCategory;
+import models.ProductItem;
 import views.tabs.ComputerClient;
+import views.tabs.Service;
 
 /**
  *
  * @author ADMIN
  */
-public class ServiceCategoryDialog extends JDialog{
+public class ProductCategoryDialog extends JDialog {
 
     private int WIDTH = 350, HEIGHT = 400;
     private JPanel container;
@@ -47,9 +49,10 @@ public class ServiceCategoryDialog extends JDialog{
     private DefaultTableModel tableModel;
     private JButton btnAdd, btnEdit, btnDelete;
 
-    private int tableSelectedRow = -1;
+    private Service serviceTab;
 
-    public ServiceCategoryDialog() {
+    public ProductCategoryDialog(Service serviceTab) {
+        this.serviceTab = serviceTab;
         Toolkit toolkit = this.getToolkit();
         Dimension dimension = toolkit.getScreenSize();
         this.setBounds(dimension.width / 2 - WIDTH / 2, dimension.height / 2 - HEIGHT / 2, WIDTH, HEIGHT);
@@ -98,30 +101,30 @@ public class ServiceCategoryDialog extends JDialog{
             @Override
             public void mouseClicked(MouseEvent e) {
                 JTextField category = new JTextField();
-                final JComponent[] inputs = new JComponent[] {
-                    new JLabel("Nhập tên loại dịch vụ"), category,
-                };
+                final JComponent[] inputs = new JComponent[]{
+                    new JLabel("Nhập tên loại dịch vụ"), category,};
                 int result = JOptionPane.showConfirmDialog(null, inputs, "Thêm loại", JOptionPane.PLAIN_MESSAGE);
                 if (result == JOptionPane.OK_OPTION) {
-                    if(category.getText().trim().isEmpty()){
+                    if (category.getText().trim().isEmpty()) {
                         JOptionPane.showMessageDialog(null,
-                        "Tên không được để trống!",
-                        "Warning",
-                        JOptionPane.WARNING_MESSAGE);
+                                "Tên không được để trống!",
+                                "Warning",
+                                JOptionPane.WARNING_MESSAGE);
                         return;
                     }
-                    for(int i = 0; i < Data.listServiceCategories.size(); i++){
-                        if(category.getText().trim().equals(Data.listServiceCategories.get(i).getName())){
+                    for (int i = 0; i < Data.listProductCategories.size(); i++) {
+                        if (category.getText().trim().equals(Data.listProductCategories.get(i).getName())) {
                             JOptionPane.showMessageDialog(null,
-                            "Loại dịch vụ này đã tồn tại!",
-                            "Warning",
-                            JOptionPane.WARNING_MESSAGE);
+                                    "Loại dịch vụ này đã tồn tại!",
+                                    "Warning",
+                                    JOptionPane.WARNING_MESSAGE);
                             return;
                         }
                     }
                     String categoryString = category.getText().trim();
-                    Data.listServiceCategories.add(new ServiceCategory(categoryString.toUpperCase()));
+                    Data.listProductCategories.add(new ProductCategory(categoryString.toUpperCase()));
                     setupTable();
+                    serviceTab.refreshTable();
                 }
             }
         });
@@ -134,23 +137,57 @@ public class ServiceCategoryDialog extends JDialog{
         btnEdit.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                
+                int rowIndex = table.getSelectedRow();
+                if(rowIndex < 0) return;
+                JTextField edtField = new JTextField(table.getValueAt(rowIndex, 0).toString());
+                final JComponent[] inputs = new JComponent[]{
+                    new JLabel("Chỉnh sửa"), edtField,
+                };
+                int result = JOptionPane.showConfirmDialog(null, inputs, "Nạp tiền", JOptionPane.PLAIN_MESSAGE);
+                if (result == JOptionPane.OK_OPTION) {
+                    String text = edtField.getText().trim();
+                    if (text.isEmpty()) {
+                        JOptionPane.showMessageDialog(ProductCategoryDialog.this,
+                                "Dữ liệu không được để trống!",
+                                "Warning",
+                                JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+                    Data.listProductCategories.get(rowIndex).setName(text.trim());
+                    setupTable();
+                    serviceTab.refreshTable();
+                }
             }
         });
     }
-    
-    private void setupDeleteButton(){
+
+    private void setupDeleteButton() {
         btnDelete = new JButton("Xóa");
         btnDelete.setBackground(Color.red);
         btnDelete.setForeground(Color.white);
         btnDelete.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                int[] rowIndexs = table.getSelectedRows();
-                for(int i = 0; i < rowIndexs.length; i++){
-                    Data.listServiceCategories.remove(rowIndexs[i]);
+                int rowIndex = table.getSelectedRow();
+                if(rowIndex < 0) return;
+                if (table.getValueAt(rowIndex, 0).equals("( Không có loại )")) {
+                    JOptionPane.showMessageDialog(null,
+                            "Không thể xóa nhóm này!",
+                            "Warning",
+                            JOptionPane.WARNING_MESSAGE);
+                    return;
                 }
+
+                int size = Data.listProductCategories.get(rowIndex).getListProductItems().size();
+                for (int i = 0; i < size; i++) {
+                    ProductItem item = Data.listProductCategories.get(rowIndex).getListProductItems().get(i);
+                    item.setCategory(Data.listProductCategories.get(0).getName()); // Default
+                    Data.listProductCategories.get(0).addProductItem(item); // NO_CATEGORY
+                }
+                Data.listProductCategories.remove(rowIndex);
+
                 setupTable();
+                serviceTab.refreshTable();
             }
         });
     }
@@ -158,11 +195,11 @@ public class ServiceCategoryDialog extends JDialog{
     private void setupTable() {
         Vector<String> columnNames = new Vector<>();
         columnNames.add("Tên");
-        
+
         Vector<Vector<String>> data = new Vector<>();
-        for (int i = 0; i < Data.listServiceCategories.size(); i++) {
+        for (int i = 0; i < Data.listProductCategories.size(); i++) {
             Vector<String> row = new Vector<>();
-            row.add(Data.listServiceCategories.get(i).getName());
+            row.add(Data.listProductCategories.get(i).getName());
             data.add(row);
         }
 
@@ -172,8 +209,8 @@ public class ServiceCategoryDialog extends JDialog{
                 return false;
             }
         };
-        
-        if(table != null){
+
+        if (table != null) {
             table.setModel(tableModel);
         }
     }

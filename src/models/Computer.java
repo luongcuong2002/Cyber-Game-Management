@@ -12,6 +12,7 @@ import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import javax.swing.Timer;
+import views.component.Footer;
 import views.dialog.BillDialog;
 import views.tabs.ComputerClient;
 
@@ -58,7 +59,7 @@ public class Computer {
     private int totalMitute = 0;
 
     @Expose(serialize = false, deserialize = false)
-    private ArrayList<ServiceCanBeOrdered> listServicesOrdered = new ArrayList<ServiceCanBeOrdered>();
+    private ArrayList<ProductCanBeOrdered> listProductsOrdered = new ArrayList<ProductCanBeOrdered>();
     
     @Expose(serialize = false, deserialize = false)
     private ArrayList<TransactionTransfer> listTransactionsTransfer = new ArrayList<TransactionTransfer>();
@@ -114,6 +115,7 @@ public class Computer {
             }
         });
         timer.start();
+        Footer.updateNumberOfComputerBeingUsed();
     }
 
     public void turnOffComputer(ComputerClient rootView) {
@@ -128,8 +130,10 @@ public class Computer {
         remainingBySecond = 0;
         currentDate = null;
         status = "Off";
+        note = "";
         listTransactionsTransfer.clear();
-        listServicesOrdered.clear();
+        listProductsOrdered.clear();
+        Footer.updateNumberOfComputerBeingUsed();
         rootView.refreshTable();
     }
 
@@ -190,8 +194,8 @@ public class Computer {
 
     public int getServiceFee() {
         int total = 0;
-        for (int i = 0; i < listServicesOrdered.size(); i++) {
-            total += listServicesOrdered.get(i).getTotalFee();
+        for (int i = 0; i < listProductsOrdered.size(); i++) {
+            total += listProductsOrdered.get(i).getTotalFee();
         }
         return total;
     }
@@ -217,7 +221,7 @@ public class Computer {
 
     public int convertTimeRemainingToMoney(int remainingBySecond) {
         int total = (int) ((remainingBySecond / 3600.0) * price);
-        if(total < 1000){
+        if(total < 1000 && userUsing.getUserGroupName().equals("Guest") && !userUsing.isIsPrepaid()){
             return 1000;
         }
         return total;
@@ -311,12 +315,12 @@ public class Computer {
         this.totalMitute = totalMitute;
     }
 
-    public ArrayList<ServiceCanBeOrdered> getListServicesOrdered() {
-        return listServicesOrdered;
+    public ArrayList<ProductCanBeOrdered> getListProductsOrdered() {
+        return listProductsOrdered;
     }
 
-    public void setListServicesOrdered(ArrayList<ServiceCanBeOrdered> listServicesOrdered) {
-        this.listServicesOrdered = listServicesOrdered;
+    public void setListProductsOrdered(ArrayList<ProductCanBeOrdered> listProductsOrdered) {
+        this.listProductsOrdered = listProductsOrdered;
     }
 
     public ArrayList<TransactionTransfer> getListTransactionsTransfer() {
@@ -326,5 +330,4 @@ public class Computer {
     public void setListTransactionsTransfer(ArrayList<TransactionTransfer> listTransactionsTransfer) {
         this.listTransactionsTransfer = listTransactionsTransfer;
     }
-
 }
