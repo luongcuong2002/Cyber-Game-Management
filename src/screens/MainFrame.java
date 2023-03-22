@@ -39,14 +39,14 @@ public class MainFrame extends JFrame {
 
         Border border = BorderFactory.createEmptyBorder(5, 5, 5, 5);
         
-        URL url = new URL("https://i-imgur-com.cdn.ampproject.org/i/s/s2.fastlycdn.xyz/2022/11/934457155OGE.gif");
-        Icon icon = new ImageIcon(url);
-        JLabel label = new JLabel(icon);
-        JPanel jpn = new JPanel();
-        jpn.setBorder(border);
-        jpn.add(label);
-        this.add(jpn, BorderLayout.NORTH);
-        this.add(footer, BorderLayout.SOUTH);
+//        URL url = new URL("https://i-imgur-com.cdn.ampproject.org/i/s/s2.fastlycdn.xyz/2022/11/934457155OGE.gif");
+//        Icon icon = new ImageIcon(url);
+//        JLabel label = new JLabel(icon);
+//        JPanel jpn = new JPanel();
+//        jpn.setBorder(border);
+//        jpn.add(label);
+//        this.add(jpn, BorderLayout.NORTH);
+//        this.add(footer, BorderLayout.SOUTH);
 
 
         JPanel container = new JPanel(new BorderLayout());
